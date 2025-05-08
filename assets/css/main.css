@@ -2754,7 +2754,11 @@ input, select, textarea {
 			object-fit: cover;
 			transition: transform 0.5s ease;
 		}
-		
+		.spotlight .image.fit.main img {
+    width: 100%;
+    height: auto;
+    object-fit: cover;
+}
 		/* Content Area Protection */
 		.spotlight.right .content {
 			left: auto;
@@ -4473,6 +4477,7 @@ input, select, textarea {
 	transform: translateY(0);
   }
   
+
   /* Responsive Grid */
   @media screen and (max-width: 736px) {
 	.project-grid {
@@ -4509,6 +4514,8 @@ input, select, textarea {
 			}
 
 		/* Spotlight */
+		
+
 
 			.spotlight .image.main {
 				max-height: 50vh;
