@@ -133,32 +133,7 @@
 				});
 
 		}
-    // Image Grid Initialization
-function initImageGrid() {
-    $('.image-grid').each(function() {
-        var $grid = $(this);
-        // Add lightbox functionality
-        $grid.find('img').on('click', function() {
-            $.fn.colorbox({
-                href: $(this).attr('src'),
-                maxWidth: '90%',
-                maxHeight: '90%'
-            });
-        });
-        // Initialize masonry grid
-        $grid.masonry({
-            itemSelector: 'figure',
-            columnWidth: '.grid-sizer',
-            percentPosition: true,
-            transitionDuration: '0.4s'
-        });
-    });
-}
-
-// Initialize on load and resize
-$window.on('load resize', function() {
-    initImageGrid();
-});
+    
 	// Spotlights.
 		var $spotlights = $('.spotlight');
 
@@ -271,5 +246,48 @@ $window.on('load resize', function() {
 
 		$banner
 			._parallax();
+// Project Grid Hover Effects
+$('.grid-item').each(function() {
+	$(this).on('mousemove', function(e) {
+	  const x = e.pageX - $(this).offset().left;
+	  const y = e.pageY - $(this).offset().top;
+	  
+	  const centerX = $(this).width()/2;
+	  const centerY = $(this).height()/2;
+	  
+	  const moveX = (x - centerX) / 20;
+	  const moveY = (y - centerY) / 20;
+	  
+	  $(this).find('img').css({
+		'transform': `scale(1.05) translate(${moveX}px, ${moveY}px)`
+	  });
+	});
+	
+	$(this).on('mouseleave', function() {
+	  $(this).find('img').css({
+		'transform': 'scale(1) translate(0, 0)'
+	  });
+	});
+  });
 
+  // Add this to your existing jQuery code
+$('.grid-item').on('mousemove', function(e) {
+	if (window.innerWidth > 980) { // Only on desktop
+	  const $this = $(this);
+	  const x = e.pageX - $this.offset().left;
+	  const y = e.pageY - $this.offset().top;
+	  const centerX = $this.width()/2;
+	  const centerY = $this.height()/2;
+	  const moveX = (x - centerX) / 15;
+	  const moveY = (y - centerY) / 15;
+	  
+	  $this.find('img').css({
+		'transform': `scale(1.05) translate(${moveX}px, ${moveY}px)`
+	  });
+	}
+  }).on('mouseleave', function() {
+	$(this).find('img').css({
+	  'transform': 'scale(1) translate(0, 0)'
+	});
+  });
 })(jQuery);
