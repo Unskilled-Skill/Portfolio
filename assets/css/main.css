@@ -4363,26 +4363,7 @@ input, select, textarea {
 
 	}
 
-	.video-background {
-		position: absolute;
-		top: 0;
-		left: 0;
-		width: 100%;
-		height: 100%;
-		overflow: hidden;
-		z-index: -1; /* Ensures it stays behind your content */
-	}
-	
-	.video-background video {
-		min-width: 100%;
-		min-height: 100%;
-		object-fit: cover;
-		position: absolute;
-		top: 50%;
-		left: 50%;
-		transform: translate(-50%, -50%);
-	}
-	
+
 	.project-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
