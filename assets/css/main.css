@@ -2777,40 +2777,40 @@ input, select, textarea {
 			width: 45%;
 			}
 		}
-				/* ====== Custom Grid Layout Adjustments ====== */
-		/* For style2 right (AR Project) - Grid on LEFT, Content on RIGHT */
-		.spotlight.style2.right .project-grid-container {
-			left: 0;
-			right: auto;
+			/* ====== Custom Grid Layout Adjustments ====== */
+	/* For style2 right (AR Project) - Grid on LEFT, Content on RIGHT */
+	.spotlight.style2.right .project-grid-container {
+		left: 0;
+		right: auto;
+	}
+	.spotlight.style2.right .content {
+		right: 0;
+		left: auto;
+	}
+	
+	/* For style3 left (Coral Project) - Content on LEFT, Grid on RIGHT */
+	.spotlight.style3.left .content {
+		left: 0;
+		right: auto;
+		border-left-width: 0.35em;
+	}
+	.spotlight.style3.left .project-grid-container {
+		right: 0;
+		left: auto;
+	}
+	
+	/* Mobile Responsiveness */
+	@media screen and (max-width: 980px) {
+		.spotlight .content,
+		.spotlight .project-grid-container {
+		position: relative !important;
+		width: 100% !important;
+		left: auto !important;
+		right: auto !important;
 		}
-		.spotlight.style2.right .content {
-			right: 0;
-			left: auto;
-		}
-		
-		/* For style3 left (Coral Project) - Content on LEFT, Grid on RIGHT */
-		.spotlight.style3.left .content {
-			left: 0;
-			right: auto;
-			border-left-width: 0.35em;
-		}
-		.spotlight.style3.left .project-grid-container {
-			right: 0;
-			left: auto;
-		}
-		
-		/* Mobile Responsiveness */
-		@media screen and (max-width: 980px) {
-			.spotlight .content,
-			.spotlight .project-grid-container {
-			position: relative !important;
-			width: 100% !important;
-			left: auto !important;
-			right: auto !important;
-			}
-			.spotlight .content { order: 1; }
-			.spotlight .project-grid-container { order: 2; }
-		}
+		.spotlight .content { order: 1; }
+		.spotlight .project-grid-container { order: 2; }
+	}
 		
 		@media screen and (max-width: 980px) {
 			.project-grid-container {
