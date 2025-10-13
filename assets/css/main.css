@@ -1,4 +1,4 @@
-@import url("fontawesome-all.min.css");
+﻿@import url("fontawesome-all.min.css");
 @import url("https://fonts.googleapis.com/css?family=Roboto:100,300,100italic,300italic");
 
 /*
@@ -115,10 +115,104 @@ input, select, textarea {
 		text-decoration: none;
 	}
 
-		a:hover {
+a:hover {
 			color: #e44c65 !important;
 			border-bottom-color: transparent;
-		}
+	}
+
+/* TUNING: Project detail pages (hero, section spacing, meta) */
+.project-hero {
+	position: relative;
+	background-size: cover;
+	background-position: center;
+	padding: 6rem 0;
+	text-align: center;
+}
+/* TUNING: Overlay panel on hero; increase/decrease background alpha + padding here */
+.project-hero .inner {
+	background: rgba(23, 24, 32, 0.75);
+	display: inline-block;
+	padding: 1.5rem 2rem;
+	border-radius: 0.25rem;
+}
+/* TUNING: Hero text spacing */
+.project-hero h2 { margin: 0 0 0.5rem 0; }
+.project-hero p { margin: 0; }
+/* TUNING: Top margin before each project section block */
+.project-section { margin-top: 2rem; }
+.project-section > * + * { margin-top: 1.25rem; }
+.project-section header.major { margin-bottom: 0.5rem; }
+.project-section header.major:first-child { margin-top: 0; }
+.project-meta { margin: 0.5rem 0 1.5rem; }
+/* Fine-tune spacing between specific blocks in project sections */
+.project-section header.major + p { /* Overview header to first paragraph */
+  margin-top: 0.5rem;
+}
+.project-section p + .project-meta { /* Paragraph to meta row */
+  margin-top: 1.25rem;
+}
+.project-section .project-meta + header.major { /* Meta row to next section header */
+  margin-top: 2rem;
+}
+@media screen and (max-width: 736px) {
+  .project-section .project-meta + header.major { margin-top: 1.5rem; }
+}
+.project-meta h4 { margin-bottom: 0.25rem; }
+/* TUNING: Mobile hero spacing */
+@media screen and (max-width: 736px) {
+	.project-hero { padding: 3.5rem 0; }
+	.project-hero .inner { padding: 1rem 1.25rem; }
+}
+
+/* TUNING: Project page layout fixes (make gallery flow normally; adjust overall margins) */
+.project-page .project-grid-container {
+	position: static;
+	width: 100%;
+	height: auto;
+	left: auto;
+	top: auto;
+	padding: 0;
+	margin: 2rem 0;
+	display: block;
+}
+.project-page .project-grid-3col { gap: 20px; }
+.project-page .grid-row { height: auto; }
+/* TUNING: Gallery card aspect ratio (e.g., 16/9, 4/3, 1/1) */
+.project-page .grid-item { max-width: none; aspect-ratio: 16 / 9; }
+
+/* Content list styling: restore bullets consistently across pages */
+ 
+
+/* TUNING: Scroll Snap (switch to 'mandatory' for stronger snaps or comment out to disable) */
+@supports (scroll-snap-type: y mandatory) {
+  html {
+    scroll-snap-type: y proximity;
+    scroll-behavior: smooth;
+    scroll-padding-top: 4.5rem; /* header offset */
+  }
+  body { /* Some browsers apply scroll to body */
+    scroll-snap-type: y proximity;
+  }
+  /* Sections that should snap */
+  #banner,
+  .spotlight,
+  .wrapper,
+  #footer,
+  .project-hero,
+  .project-section {
+    scroll-snap-align: start;
+  }
+}
+
+/* TUNING: Breadcrumbs spacing and style */
+.breadcrumbs {
+	margin: 0.5rem auto 1.25rem;
+	font-size: 0.9rem;
+	opacity: 0.85;
+	text-align: center;
+}
+.breadcrumbs a { color: inherit; border-bottom: dotted 1px; }
+.breadcrumbs .sep { opacity: 0.6; padding: 0 0.35rem; }
 
 	strong, b {
 		color: #ffffff;
