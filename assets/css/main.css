@@ -1,4 +1,4 @@
-﻿@import url("fontawesome-all.min.css");
+@import url("fontawesome-all.min.css");
 @import url("https://fonts.googleapis.com/css?family=Roboto:100,300,100italic,300italic");
 
 /*
@@ -183,26 +183,8 @@ a:hover {
 /* Content list styling: restore bullets consistently across pages */
  
 
-/* TUNING: Scroll Snap (switch to 'mandatory' for stronger snaps or comment out to disable) */
-@supports (scroll-snap-type: y mandatory) {
-  html {
-    scroll-snap-type: y proximity;
-    scroll-behavior: smooth;
-    scroll-padding-top: 4.5rem; /* header offset */
-  }
-  body { /* Some browsers apply scroll to body */
-    scroll-snap-type: y proximity;
-  }
-  /* Sections that should snap */
-  #banner,
-  .spotlight,
-  .wrapper,
-  #footer,
-  .project-hero,
-  .project-section {
-    scroll-snap-align: start;
-  }
-}
+
+/* Scroll snap disabled due to issues; re-enable later if desired */
 
 /* TUNING: Breadcrumbs spacing and style */
 .breadcrumbs {
@@ -210,6 +192,28 @@ a:hover {
 	font-size: 0.9rem;
 	opacity: 0.85;
 	text-align: center;
+}
+
+/* TUNING: Center icons in circular badges (Skills & Expertise) */
+.icon.major {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 6em; /* keep circle size */
+  height: 6em;
+  line-height: 1; /* override theme line-height so pseudo-element centers */
+}
+.icon.major:before {
+  line-height: 1; /* ensure icon glyph isn't vertically offset */
+  font-size: 2.1em; /* slightly smaller so it fits neatly inside */
+  display: inline-block; /* allow transform centering tweak */
+  transform: translateY(0.06em); /* TUNING: nudge down to remove bottom gap */
+}
+
+/* Tighter fit on small screens */
+@media screen and (max-width: 736px) {
+  .icon.major { width: 5.5em; height: 5.5em; }
+  .icon.major:before { font-size: 1.9em; }
 }
 .breadcrumbs a { color: inherit; border-bottom: dotted 1px; }
 .breadcrumbs .sep { opacity: 0.6; padding: 0 0.35rem; }

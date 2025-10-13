@@ -30,9 +30,7 @@
 			$body.addClass('is-touch');
 
 	// Scrolly links.
-		$('.scrolly').scrolly({
-			speed: 2000
-		});
+		$('.scrolly').scrolly({ speed: 900, offset: 60 });
 
 	// Dropdowns.
 		$('#nav > ul').dropotron({
