@@ -3371,12 +3371,12 @@ a:hover {
 
 /* Alignment modifiers for next arrows */
 .goto-next.left {
-    left: 1.5em;
+    left: 2em;
     margin-left: 0;
     right: auto;
 }
 .goto-next.right {
-    right: 1.5em;
+    right: 2em;
     left: auto;
     margin-left: 0;
 }
@@ -3401,15 +3401,16 @@ a:hover {
 
 /* Spotlight */
 
-	.spotlight {
-		background-attachment: fixed;
-		background-position: center center;
-		background-size: cover;
-		box-shadow: 0 0.25em 0.5em 0 rgba(0, 0, 0, 0.25);
-		height: 100vh;
-		overflow: hidden;
-		position: relative;
-	}
+.spotlight {
+    background-attachment: fixed;
+    background-position: center center;
+    background-size: cover;
+    box-shadow: 0 0.25em 0.5em 0 rgba(0, 0, 0, 0.25);
+    min-height: 100vh;
+    height: auto;
+    overflow: hidden;
+    position: relative;
+}
 
 		.spotlight:nth-last-of-type(1) {
 			z-index: 1;
@@ -4706,6 +4707,31 @@ a:hover {
 
 body.no-scroll { overflow: hidden; }
 
+/* Profile avatar in banner */
+#banner .banner-intro {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+}
+#banner .banner-intro header { order: 1; }
+
+.profile-avatar {
+  order: 2;
+  margin-left: auto;
+  width: clamp(160px, 18vw, 280px);
+  height: clamp(160px, 18vw, 280px);
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid rgba(255,255,255,0.35);
+  box-shadow: 0 6px 16px rgba(0,0,0,0.35);
+}
+
+@media screen and (max-width: 736px) {
+  #banner .banner-intro { flex-direction: column; text-align: center; }
+  /* On mobile, stack and remove push to right */
+  .profile-avatar { order: 0; margin-left: 0; }
+}
+
 /* Lightbox controls */
 .lightbox__btn {
   position: absolute;
@@ -4725,3 +4751,40 @@ body.no-scroll { overflow: hidden; }
 .lightbox__close { top: 1rem; right: 1rem; }
 .lightbox__prev { left: 1rem; top: 50%; transform: translateY(-50%); }
 .lightbox__next { right: 1rem; top: 50%; transform: translateY(-50%); }
+
+.lightbox__caption {
+  position: absolute;
+  left: 50%;
+  bottom: 2rem;
+  transform: translateX(-50%);
+  color: #fff;
+  background: rgba(0,0,0,0.5);
+  padding: 0.5rem 0.75rem;
+  border-radius: 4px;
+  font-size: 0.95rem;
+  max-width: 90vw;
+  text-align: center;
+}
+
+.lightbox__btn:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
+
+@media (prefers-reduced-motion: reduce) {
+  .grid-item, .grid-item img, .overlay, .lightbox__img { transition: none !important; }
+}
+
+/* Skills icons: precise centering inside circular frame */
+#five .icon.major {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  line-height: 1 !important; /* ignore theme line-height trick */
+  margin: 0 auto 1.25em auto !important; /* center circle within column */
+}
+#five .icon.major:before {
+  line-height: 1 !important;
+  transform: none !important; /* remove residual nudge */
+  font-size: 2.1em; /* comfortable fit in 6em circle */
+}
+
+/* Center headings and copy under icons */
+#five section { text-align: center; }

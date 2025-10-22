@@ -36,12 +36,17 @@
             var $el = $(this);
             var $header = $('#header');
             var dataOffset = $el.data('offset');
+            var dataOffsetExtra = parseInt($el.data('offset-extra'), 10);
             var dataAnchor = $el.data('anchor'); // 'top' or 'middle'
             var dataSpeed = $el.data('speed');
 
             var offsetOpt = (typeof dataOffset !== 'undefined')
                 ? parseInt(dataOffset, 10)
-                : function () { return ($header.outerHeight() || 0); };
+                : function () {
+                    var base = ($header.outerHeight() || 0);
+                    var extra = isNaN(dataOffsetExtra) ? 0 : dataOffsetExtra;
+                    return base + extra;
+                };
 
             $el.scrolly({
                 speed: (typeof dataSpeed !== 'undefined') ? parseInt(dataSpeed, 10) : 900,
@@ -312,10 +317,11 @@ $('.grid-item').on('mousemove', function(e) {
 (function(){
   var $body = $('body');
   var tpl = ''+
-    '<div class="lightbox" aria-hidden="true" role="dialog" aria-label="Image viewer">'+
+    '<div class="lightbox" aria-hidden="true" aria-modal="true" role="dialog" aria-label="Image viewer">'+
       '<button class="lightbox__btn lightbox__close" aria-label="Close">×</button>'+
       '<button class="lightbox__btn lightbox__prev" aria-label="Previous">‹</button>'+
       '<img class="lightbox__img" alt="Expanded image" />'+
+      '<div class="lightbox__caption" role="note"></div>'+
       '<button class="lightbox__btn lightbox__next" aria-label="Next">›</button>'+
     '</div>';
   var $lightbox = $(tpl).appendTo($body);
@@ -327,15 +333,22 @@ $('.grid-item').on('mousemove', function(e) {
     if (!gallery.length) return;
     // wrap around
     index = (i + gallery.length) % gallery.length;
-    $lightbox.find('.lightbox__img').attr('src', gallery[index]);
+    var item = gallery[index];
+    $lightbox.find('.lightbox__img').attr('src', item.src);
+    $lightbox.find('.lightbox__caption').text(item.alt || '');
   }
 
   function openFrom($img){
     // Build gallery from nearest grid container
     var $container = $img.closest('.project-grid-container');
-    var $imgs = $container.find('.grid-item img');
-    gallery = $imgs.map(function(){ return $(this).attr('src'); }).get();
-    index = $imgs.index($img);
+    var $items = $container.find('.grid-item');
+    gallery = $items.map(function(){
+      var $it = $(this);
+      var $im = $it.find('img').first();
+      var label = ($it.find('.overlay').text() || $im.attr('alt') || '').trim();
+      return { src: $im.attr('src'), alt: label };
+    }).get();
+    index = $items.index($img.closest('.grid-item'));
     show(index);
     $lightbox.addClass('open').attr('aria-hidden','false');
     $body.addClass('no-scroll');
