@@ -2891,11 +2891,13 @@ a:hover {
 	}
 	
 	/* For style3 left (Coral Project) - Content on LEFT, Grid on RIGHT */
-	.spotlight.style3.left .content {
-		left: 0;
-		right: auto;
-		border-left-width: 0.35em;
-	}
+.spotlight.style3.left .content {
+    left: 0;
+    right: auto;
+    /* Remove left accent, keep right */
+    border-left-width: 0;
+    border-right-width: 0.35em;
+}
 	.spotlight.style3.left .project-grid-container {
 		right: 0;
 		left: auto;
@@ -3352,20 +3354,34 @@ a:hover {
 
 /* Goto Next */
 
-	.goto-next {
-		border: 0;
-		bottom: 0;
-		display: block;
-		height: 5em;
-		left: 50%;
-		margin: 0 0 0 -5em;
-		overflow: hidden;
-		position: absolute;
-		text-indent: 10em;
-		white-space: nowrap;
-		width: 10em;
-		z-index: 100;
-	}
+.goto-next {
+    border: 0;
+    bottom: 0;
+    display: block;
+    height: 5em;
+    left: 50%;
+    margin: 0 0 0 -5em;
+    overflow: hidden;
+    position: absolute;
+    text-indent: 10em;
+    white-space: nowrap;
+    width: 10em;
+    z-index: 100;
+}
+
+/* Alignment modifiers for next arrows */
+.goto-next.left {
+    left: 1.5em;
+    margin-left: 0;
+    right: auto;
+}
+.goto-next.right {
+    right: 1.5em;
+    left: auto;
+    margin-left: 0;
+}
+
+
 
 		.goto-next:before {
 			background-image: url("images/arrow.svg");
@@ -4487,6 +4503,7 @@ a:hover {
   height: 100%;
   object-fit: cover;
   transition: transform 0.5s ease;
+  cursor: zoom-in;
 }
 
 .grid-item:hover {
@@ -4548,6 +4565,7 @@ a:hover {
 	height: 100%;
 	object-fit: cover;
 	transition: transform 0.5s ease;
+    cursor: zoom-in;
   }
   
   .grid-item:hover {
@@ -4653,3 +4671,57 @@ a:hover {
 					}
 
 	}
+
+/* === Lightbox === */
+.lightbox {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.85);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000;
+  cursor: zoom-out;
+}
+
+.lightbox.open { display: flex; }
+
+.lightbox__img {
+  max-width: 90vw;
+  max-height: 90vh;
+  border-radius: 8px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+  transform: scale(0.97);
+  opacity: 0;
+  transition: transform 0.2s ease, opacity 0.2s ease;
+}
+
+.lightbox.open .lightbox__img {
+  transform: scale(1);
+  opacity: 1;
+}
+
+body.no-scroll { overflow: hidden; }
+
+/* Lightbox controls */
+.lightbox__btn {
+  position: absolute;
+  background: rgba(255,255,255,0.15);
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  width: 2.25em;
+  height: 2.25em;
+  line-height: 2.25em;
+  text-align: center;
+  font-size: 1.5em;
+  cursor: pointer;
+  user-select: none;
+}
+.lightbox__btn:hover { background: rgba(255,255,255,0.25); }
+.lightbox__close { top: 1rem; right: 1rem; }
+.lightbox__prev { left: 1rem; top: 50%; transform: translateY(-50%); }
+.lightbox__next { right: 1rem; top: 50%; transform: translateY(-50%); }

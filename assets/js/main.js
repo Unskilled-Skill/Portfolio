@@ -29,8 +29,26 @@
 		if (browser.mobile)
 			$body.addClass('is-touch');
 
-	// Scrolly links.
-		$('.scrolly').scrolly({ speed: 900, offset: 60 });
+    // Scrolly links with per-link customization.
+        // Default offset uses header height; can override via data-offset on the link.
+        // For `.goto-next` arrows, default anchor is 'middle' to center the next section.
+        $('.scrolly').each(function () {
+            var $el = $(this);
+            var $header = $('#header');
+            var dataOffset = $el.data('offset');
+            var dataAnchor = $el.data('anchor'); // 'top' or 'middle'
+            var dataSpeed = $el.data('speed');
+
+            var offsetOpt = (typeof dataOffset !== 'undefined')
+                ? parseInt(dataOffset, 10)
+                : function () { return ($header.outerHeight() || 0); };
+
+            $el.scrolly({
+                speed: (typeof dataSpeed !== 'undefined') ? parseInt(dataSpeed, 10) : 900,
+                offset: offsetOpt,
+                anchor: (typeof dataAnchor !== 'undefined') ? dataAnchor : ($el.hasClass('goto-next') ? 'middle' : 'top')
+            });
+        });
 
 	// Dropdowns.
 		$('#nav > ul').dropotron({
@@ -289,3 +307,69 @@ $('.grid-item').on('mousemove', function(e) {
 	});
   });
 })(jQuery);
+
+// Lightbox for project grid images (with nav + close)
+(function(){
+  var $body = $('body');
+  var tpl = ''+
+    '<div class="lightbox" aria-hidden="true" role="dialog" aria-label="Image viewer">'+
+      '<button class="lightbox__btn lightbox__close" aria-label="Close">×</button>'+
+      '<button class="lightbox__btn lightbox__prev" aria-label="Previous">‹</button>'+
+      '<img class="lightbox__img" alt="Expanded image" />'+
+      '<button class="lightbox__btn lightbox__next" aria-label="Next">›</button>'+
+    '</div>';
+  var $lightbox = $(tpl).appendTo($body);
+
+  var gallery = [];
+  var index = -1;
+
+  function show(i){
+    if (!gallery.length) return;
+    // wrap around
+    index = (i + gallery.length) % gallery.length;
+    $lightbox.find('.lightbox__img').attr('src', gallery[index]);
+  }
+
+  function openFrom($img){
+    // Build gallery from nearest grid container
+    var $container = $img.closest('.project-grid-container');
+    var $imgs = $container.find('.grid-item img');
+    gallery = $imgs.map(function(){ return $(this).attr('src'); }).get();
+    index = $imgs.index($img);
+    show(index);
+    $lightbox.addClass('open').attr('aria-hidden','false');
+    $body.addClass('no-scroll');
+  }
+
+  function close(){
+    $lightbox.removeClass('open').attr('aria-hidden','true');
+    $lightbox.find('.lightbox__img').attr('src','');
+    $body.removeClass('no-scroll');
+    gallery = []; index = -1;
+  }
+
+  // Open on image click
+  $(document).on('click', '.project-grid-container .grid-item img', function(e){
+    e.preventDefault();
+    openFrom($(this));
+  });
+
+  // Close when clicking image or backdrop
+  $lightbox.on('click', function(e){
+    var $t = $(e.target);
+    if ($t.is('.lightbox__img') || $t.is('.lightbox')) close();
+  });
+
+  // Controls
+  $lightbox.on('click', '.lightbox__close', function(e){ e.preventDefault(); close(); });
+  $lightbox.on('click', '.lightbox__prev', function(e){ e.preventDefault(); show(index-1); });
+  $lightbox.on('click', '.lightbox__next', function(e){ e.preventDefault(); show(index+1); });
+
+  // Keyboard
+  $(document).on('keyup', function(e){
+    if (!$lightbox.hasClass('open')) return;
+    if (e.key === 'Escape') close();
+    else if (e.key === 'ArrowLeft') show(index-1);
+    else if (e.key === 'ArrowRight') show(index+1);
+  });
+})();
