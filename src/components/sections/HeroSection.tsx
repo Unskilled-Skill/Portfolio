@@ -26,11 +26,11 @@ export function HeroSection() {
         <FadeIn direction="down" delay={0} threshold={0}>
           <div className="mb-8 flex justify-center">
             <div className="relative">
-              <div className="absolute -inset-1 rounded-full bg-gradient-to-r from-accent to-pink-400 opacity-50 blur-lg" />
+              <div className="absolute -inset-2 rounded-3xl bg-gradient-to-r from-accent to-pink-400 opacity-40 blur-xl" />
               <img
                 src={identity.avatar}
                 alt={identity.name}
-                className="relative h-32 w-32 rounded-full border-2 border-white/10 object-cover shadow-2xl"
+                className="relative h-72 w-auto max-w-[200px] rounded-3xl border-2 border-white/10 object-contain shadow-2xl"
               />
             </div>
           </div>
