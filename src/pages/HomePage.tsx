@@ -10,7 +10,7 @@ import { SkillsSection } from '../components/sections/SkillsSection';
 import { ContactSection } from '../components/sections/ContactSection';
 import { StatsSection } from '../components/sections/StatsSection';
 import { projects } from '../data/projects';
-import { seo } from '../data/site';
+import { seo, identity } from '../data/site';
 
 export function HomePage() {
   const location = useLocation();
@@ -36,7 +36,15 @@ export function HomePage() {
     <>
       <Helmet>
         <title>{seo.siteTitle}</title>
-        <meta name="description" content={seo.description} />
+        <meta name="description"          content={seo.description} />
+        <meta property="og:type"          content="website" />
+        <meta property="og:title"         content={seo.siteTitle} />
+        <meta property="og:description"   content={seo.description} />
+        <meta property="og:image"         content={identity.avatar} />
+        <meta name="twitter:card"         content="summary_large_image" />
+        <meta name="twitter:title"        content={seo.siteTitle} />
+        <meta name="twitter:description"  content={seo.description} />
+        <meta name="twitter:image"        content={identity.avatar} />
       </Helmet>
 
       <HeroSection />

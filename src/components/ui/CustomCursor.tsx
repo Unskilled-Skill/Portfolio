@@ -83,10 +83,22 @@ export function CustomCursor() {
       raf = requestAnimationFrame(animate);
     };
 
+    // Hide cursor when an iframe (e.g. YouTube) captures window focus
+    const onBlur = () => {
+      dot.style.opacity  = '0';
+      ring.style.opacity = '0';
+    };
+    const onFocus = () => {
+      dot.style.opacity  = '1';
+      ring.style.opacity = '1';
+    };
+
     window.addEventListener('mousemove', onMove,  { passive: true });
     window.addEventListener('mouseover', onOver,  { passive: true });
     window.addEventListener('mousedown', onDown);
     window.addEventListener('mouseup',   onUp);
+    window.addEventListener('blur',  onBlur);
+    window.addEventListener('focus', onFocus);
     raf = requestAnimationFrame(animate);
 
     return () => {
@@ -95,6 +107,8 @@ export function CustomCursor() {
       window.removeEventListener('mouseover', onOver);
       window.removeEventListener('mousedown', onDown);
       window.removeEventListener('mouseup',   onUp);
+      window.removeEventListener('blur',  onBlur);
+      window.removeEventListener('focus', onFocus);
       cancelAnimationFrame(raf);
     };
   }, []);

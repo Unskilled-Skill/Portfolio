@@ -1,5 +1,6 @@
+import { useState } from 'react';
 import type { LucideIcon } from 'lucide-react';
-import { Github, Linkedin, Palette, Mail, Send, Download } from 'lucide-react';
+import { Github, Linkedin, Palette, Mail, Copy, Check, Download } from 'lucide-react';
 import { socialLinks } from '../../data/social';
 import { FadeIn } from '../ui/FadeIn';
 import { identity } from '../../data/site';
@@ -12,6 +13,18 @@ const iconMap: Record<string, LucideIcon> = {
 };
 
 export function ContactSection() {
+  const [copied, setCopied] = useState(false);
+
+  const copyEmail = async () => {
+    try {
+      await navigator.clipboard.writeText(identity.email);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch {
+      window.location.href = `mailto:${identity.email}`;
+    }
+  };
+
   return (
     <section id="contact" className="relative py-24">
       <div className="absolute inset-0 bg-gradient-to-b from-bg to-surface/50" />
@@ -33,13 +46,13 @@ export function ContactSection() {
 
         <FadeIn direction="up" delay={150}>
           <div className="flex flex-col items-center gap-4 sm:flex-row sm:justify-center">
-            <a
-              href={`mailto:${identity.email}`}
-              className="inline-flex items-center gap-2 rounded-lg bg-accent px-8 py-4 text-lg font-light text-white shadow-lg shadow-accent/20 transition-all duration-300 hover:bg-accent-dark hover:shadow-accent/40 hover:gap-3"
+            <button
+              onClick={copyEmail}
+              className="inline-flex items-center gap-2 rounded-lg bg-accent px-8 py-4 text-lg font-light text-white shadow-lg shadow-accent/20 transition-all duration-300 hover:bg-accent-dark hover:shadow-accent/40"
             >
-              <Send size={18} />
-              Send a Message
-            </a>
+              {copied ? <Check size={18} /> : <Copy size={18} />}
+              {copied ? 'Copied!' : 'Copy Email'}
+            </button>
             <a
               href={identity.cvPath}
               download
@@ -49,6 +62,7 @@ export function ContactSection() {
               Download CV
             </a>
           </div>
+          <p className="mt-4 text-sm font-light text-white/30">{identity.email}</p>
         </FadeIn>
 
         <FadeIn direction="up" delay={250}>
