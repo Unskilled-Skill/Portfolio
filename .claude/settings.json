@@ -1,0 +1,16 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npx tsc:*)",
+      "Bash(npm list:*)",
+      "Bash(python3 -c \":*)",
+      "Bash(node -e \"console.log\\(require\\(''fs''\\).readFileSync\\(''/c/Dev/Portfolio/src/pages/ProjectPage.tsx''\\).length\\)\")",
+      "Bash(node -e \":*)",
+      "Bash(\"c:/Dev/Portfolio/src/pages/ProjectPage.tsx\")",
+      "Bash(\"c:/Dev/Portfolio/src/pages/NotFound.tsx\")"
+    ],
+    "additionalDirectories": [
+      "C:\\Users\\roche\\.claude\\projects\\c--Dev-Portfolio"
+    ]
+  }
+}
