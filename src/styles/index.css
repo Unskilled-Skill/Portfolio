@@ -54,6 +54,10 @@ html[data-custom-cursor] * {
   }
 }
 
+@keyframes underline-draw {
+  to { width: 100%; }
+}
+
 @keyframes gradient-pan {
   0%   { background-position: 0%   50%; }
   50%  { background-position: 100% 50%; }

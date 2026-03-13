@@ -36,10 +36,16 @@ export function HeroSection() {
         </FadeIn>
 
         <FadeIn direction="up" delay={150} threshold={0}>
-          <h1 className="mb-5 font-display text-4xl font-bold leading-tight tracking-tight sm:mb-8 sm:text-5xl md:text-7xl">
-            {identity.name.split(' ')[0]}{' '}
-            <span className="text-gradient">{identity.name.split(' ').slice(1).join(' ')}</span>
-          </h1>
+          <div className="relative mb-5 inline-block sm:mb-8">
+            <h1 className="font-display text-4xl font-bold leading-tight tracking-tight sm:text-5xl md:text-7xl">
+              {identity.name.split(' ')[0]}{' '}
+              <span className="text-gradient">{identity.name.split(' ').slice(1).join(' ')}</span>
+            </h1>
+            <span
+              className="absolute bottom-[-6px] left-0 h-[2px] w-0 rounded-full bg-gradient-to-r from-accent via-pink-400 to-transparent"
+              style={{ animation: 'underline-draw 0.8s ease-out 0.6s forwards' }}
+            />
+          </div>
         </FadeIn>
 
         <div className="mb-8">

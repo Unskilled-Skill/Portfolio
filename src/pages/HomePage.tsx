@@ -58,12 +58,6 @@ export function HomePage() {
       <HeroSection />
       <Divider />
 
-      <AboutSection />
-      <Divider />
-
-      <StatsSection />
-      <Divider />
-
       <div id="projects">
         {sortedProjects.map((project, index) => (
           <ProjectSpotlight
@@ -83,6 +77,12 @@ export function HomePage() {
           </Link>
         </div>
       </div>
+      <Divider />
+
+      <StatsSection />
+      <Divider />
+
+      <AboutSection />
       <Divider />
 
       <SkillsSection />

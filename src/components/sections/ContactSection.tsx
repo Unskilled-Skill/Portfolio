@@ -39,7 +39,7 @@ export function ContactSection() {
               Let's Connect
             </h2>
             <p className="mx-auto max-w-md font-light text-white/55">
-              Interested in collaborating or just want to say hi? Feel free to reach out.
+              Open to freelance, collaborations, and what comes next — game dev, frontend, or anything creative. Let's build something.
             </p>
           </div>
         </FadeIn>
