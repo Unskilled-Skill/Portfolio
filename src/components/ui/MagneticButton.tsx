@@ -1,4 +1,4 @@
-import { useRef, type ReactNode } from 'react';
+import { useRef, useEffect, type ReactNode } from 'react';
 
 interface MagneticButtonProps {
   children: ReactNode;
@@ -11,10 +11,48 @@ interface MagneticButtonProps {
  * On mouse-leave it springs back to its original position.
  */
 export function MagneticButton({ children, strength = 0.35 }: MagneticButtonProps) {
-  const ref = useRef<HTMLDivElement>(null);
+  const ref       = useRef<HTMLDivElement>(null);
+  const targetRef = useRef({ x: 0, y: 0 });
+  const currentRef = useRef({ x: 0, y: 0 });
+  const rafRef    = useRef<number | null>(null);
+  const hoverRef  = useRef(false);
+
+  useEffect(() => {
+    return () => {
+      if (rafRef.current !== null) cancelAnimationFrame(rafRef.current);
+    };
+  }, []);
+
+  const startLoop = () => {
+    const loop = () => {
+      const el = ref.current;
+      if (!el) return;
+
+      const lerp = hoverRef.current ? 0.12 : 0.08;
+      currentRef.current.x += (targetRef.current.x - currentRef.current.x) * lerp;
+      currentRef.current.y += (targetRef.current.y - currentRef.current.y) * lerp;
+
+      el.style.transform = `translate(${currentRef.current.x}px, ${currentRef.current.y}px)`;
+
+      // Stop when close enough and not hovering
+      const dist = Math.abs(targetRef.current.x - currentRef.current.x)
+                 + Math.abs(targetRef.current.y - currentRef.current.y);
+      if (!hoverRef.current && dist < 0.05) {
+        el.style.transform = 'translate(0, 0)';
+        rafRef.current = null;
+        return;
+      }
+
+      rafRef.current = requestAnimationFrame(loop);
+    };
+    if (rafRef.current === null) {
+      rafRef.current = requestAnimationFrame(loop);
+    }
+  };
 
   const onEnter = () => {
-    if (ref.current) ref.current.style.transition = 'transform 0.1s linear';
+    hoverRef.current = true;
+    startLoop();
   };
 
   const onMove = (e: React.MouseEvent<HTMLDivElement>) => {
@@ -23,14 +61,13 @@ export function MagneticButton({ children, strength = 0.35 }: MagneticButtonProp
     const rect = el.getBoundingClientRect();
     const dx = e.clientX - (rect.left + rect.width  / 2);
     const dy = e.clientY - (rect.top  + rect.height / 2);
-    el.style.transform = `translate(${dx * strength}px, ${dy * strength}px)`;
+    targetRef.current = { x: dx * strength, y: dy * strength };
   };
 
   const onLeave = () => {
-    const el = ref.current;
-    if (!el) return;
-    el.style.transition = 'transform 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
-    el.style.transform  = 'translate(0, 0)';
+    hoverRef.current = false;
+    targetRef.current = { x: 0, y: 0 };
+    startLoop();
   };
 
   return (

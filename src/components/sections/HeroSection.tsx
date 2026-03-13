@@ -10,7 +10,6 @@ export function HeroSection() {
 
   return (
     <section className="relative flex min-h-screen items-center justify-center overflow-hidden">
-      <div className="absolute inset-0 bg-gradient-to-b from-bg via-bg to-surface" />
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_rgba(228,76,101,0.08)_0%,_transparent_60%)]" />
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_left,_rgba(228,76,101,0.05)_0%,_transparent_60%)]" />
       <div
@@ -22,7 +21,7 @@ export function HeroSection() {
         }}
       />
 
-      <div className="relative z-10 mx-auto max-w-4xl px-6 text-center">
+      <div className="relative z-10 mx-auto max-w-4xl px-6 pt-20 text-center sm:pt-0">
         <FadeIn direction="down" delay={0} threshold={0}>
           <div className="mb-8 flex justify-center">
             <div className="relative">

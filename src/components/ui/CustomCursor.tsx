@@ -22,17 +22,41 @@ export function CustomCursor() {
     const glow = glowRef.current;
     if (!dot || !ring || !glow) return;
 
+    // Start hidden — JS owns opacity from here, React must not override it
+    dot.style.opacity  = '0';
+    ring.style.opacity = '0';
+    glow.style.opacity = '0';
+    // Start off-screen — JS owns transform from here
+    dot.style.transform  = 'translate(-300px, -300px)';
+    ring.style.transform = 'translate(-318px, -318px)';
+    glow.style.transform = 'translate(-500px, -500px)';
+
     // Hide system cursor site-wide
     document.documentElement.setAttribute('data-custom-cursor', '');
 
-    let mouseX = -200, mouseY = -200;
-    let ringX  = -200, ringY  = -200;
-    let glowX  = -200, glowY  = -200;
+    let mouseX = -300, mouseY = -300;
+    let ringX  = -300, ringY  = -300;
+    let glowX  = -300, glowY  = -300;
+    let visible = false;
     let raf: number;
+
+    const show = () => {
+      dot.style.opacity  = '1';
+      ring.style.opacity = '1';
+      glow.style.opacity = '1';
+      visible = true;
+    };
+    const hide = () => {
+      dot.style.opacity  = '0';
+      ring.style.opacity = '0';
+      glow.style.opacity = '0';
+      visible = false;
+    };
 
     const onMove = (e: MouseEvent) => {
       mouseX = e.clientX;
       mouseY = e.clientY;
+      if (!visible) show();
     };
 
     const onOver = (e: MouseEvent) => {
@@ -83,15 +107,10 @@ export function CustomCursor() {
       raf = requestAnimationFrame(animate);
     };
 
-    // Hide cursor when an iframe (e.g. YouTube) captures window focus
-    const onBlur = () => {
-      dot.style.opacity  = '0';
-      ring.style.opacity = '0';
-    };
-    const onFocus = () => {
-      dot.style.opacity  = '1';
-      ring.style.opacity = '1';
-    };
+    const onBlur       = () => hide();
+    const onFocus      = () => { if (visible) show(); };
+    const onMouseLeave = () => hide();
+    const onMouseEnter = () => { if (visible) show(); };
 
     window.addEventListener('mousemove', onMove,  { passive: true });
     window.addEventListener('mouseover', onOver,  { passive: true });
@@ -99,6 +118,8 @@ export function CustomCursor() {
     window.addEventListener('mouseup',   onUp);
     window.addEventListener('blur',  onBlur);
     window.addEventListener('focus', onFocus);
+    document.addEventListener('mouseleave', onMouseLeave);
+    document.addEventListener('mouseenter', onMouseEnter);
     raf = requestAnimationFrame(animate);
 
     return () => {
@@ -109,6 +130,8 @@ export function CustomCursor() {
       window.removeEventListener('mouseup',   onUp);
       window.removeEventListener('blur',  onBlur);
       window.removeEventListener('focus', onFocus);
+      document.removeEventListener('mouseleave', onMouseLeave);
+      document.removeEventListener('mouseenter', onMouseEnter);
       cancelAnimationFrame(raf);
     };
   }, []);
@@ -119,10 +142,10 @@ export function CustomCursor() {
       <div
         ref={glowRef}
         aria-hidden="true"
-        className="pointer-events-none fixed left-0 top-0 z-0 h-[400px] w-[400px] rounded-full"
+        className="pointer-events-none fixed left-0 top-0 z-0 h-[400px] w-[400px] rounded-full [@media(pointer:coarse)]:hidden [@media(prefers-reduced-motion:reduce)]:hidden"
         style={{
           background: 'radial-gradient(circle, rgba(228,76,101,0.07) 0%, transparent 70%)',
-          willChange: 'transform',
+          willChange: 'transform, opacity',
         }}
       />
 
@@ -130,13 +153,13 @@ export function CustomCursor() {
       <div
         ref={ringRef}
         aria-hidden="true"
-        className="pointer-events-none fixed left-0 top-0 z-[9999] rounded-full border"
+        className="pointer-events-none fixed left-0 top-0 z-[9999] rounded-full border [@media(pointer:coarse)]:hidden [@media(prefers-reduced-motion:reduce)]:hidden"
         style={{
           width: '36px',
           height: '36px',
           borderColor: 'rgba(255,255,255,0.25)',
           background: 'transparent',
-          willChange: 'transform',
+          willChange: 'transform, opacity',
           transition: 'width 200ms ease, height 200ms ease, background 200ms ease, border-color 200ms ease',
         }}
       />
@@ -145,11 +168,11 @@ export function CustomCursor() {
       <div
         ref={dotRef}
         aria-hidden="true"
-        className="pointer-events-none fixed left-0 top-0 z-[9999] rounded-full bg-accent"
+        className="pointer-events-none fixed left-0 top-0 z-[9999] rounded-full bg-accent [@media(pointer:coarse)]:hidden [@media(prefers-reduced-motion:reduce)]:hidden"
         style={{
           width: '6px',
           height: '6px',
-          willChange: 'transform',
+          willChange: 'transform, opacity',
           transition: 'opacity 150ms ease',
         }}
       />
