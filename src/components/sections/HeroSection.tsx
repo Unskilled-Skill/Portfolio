@@ -23,20 +23,20 @@ export function HeroSection() {
 
       <div className="relative z-10 mx-auto max-w-4xl px-6 pt-20 text-center sm:pt-0">
         <FadeIn direction="down" delay={0} threshold={0}>
-          <div className="mb-8 flex justify-center">
+          <div className="mb-6 flex justify-center sm:mb-8">
             <div className="relative">
               <div className="absolute -inset-2 rounded-3xl bg-gradient-to-r from-accent to-pink-400 opacity-40 blur-xl" />
               <img
                 src={identity.avatar}
                 alt={identity.name}
-                className="relative h-72 w-auto max-w-[200px] rounded-3xl border-2 border-white/10 object-contain shadow-2xl"
+                className="relative h-44 w-auto max-w-[140px] rounded-3xl border-2 border-white/10 object-contain shadow-2xl sm:h-72 sm:max-w-[200px]"
               />
             </div>
           </div>
         </FadeIn>
 
         <FadeIn direction="up" delay={150} threshold={0}>
-          <h1 className="mb-8 font-display text-5xl font-bold leading-tight tracking-tight md:text-7xl">
+          <h1 className="mb-5 font-display text-4xl font-bold leading-tight tracking-tight sm:mb-8 sm:text-5xl md:text-7xl">
             {identity.name.split(' ')[0]}{' '}
             <span className="text-gradient">{identity.name.split(' ').slice(1).join(' ')}</span>
           </h1>
@@ -47,7 +47,7 @@ export function HeroSection() {
         </div>
 
         <FadeIn direction="up" delay={450} threshold={0}>
-          <p className="mx-auto mb-10 max-w-xl text-base font-light leading-relaxed text-white/40">
+          <p className="mx-auto mb-7 max-w-xl text-base font-light leading-relaxed text-white/40 sm:mb-10">
             {identity.tagline}
           </p>
         </FadeIn>

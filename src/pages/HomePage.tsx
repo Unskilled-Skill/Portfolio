@@ -12,6 +12,14 @@ import { StatsSection } from '../components/sections/StatsSection';
 import { projects } from '../data/projects';
 import { seo, identity } from '../data/site';
 
+function Divider() {
+  return (
+    <div className="relative h-px w-full overflow-hidden">
+      <div className="absolute inset-0 bg-gradient-to-r from-transparent via-accent/30 to-transparent" />
+    </div>
+  );
+}
+
 export function HomePage() {
   const location = useLocation();
 
@@ -48,10 +56,13 @@ export function HomePage() {
       </Helmet>
 
       <HeroSection />
+      <Divider />
 
       <AboutSection />
+      <Divider />
 
       <StatsSection />
+      <Divider />
 
       <div id="projects">
         {sortedProjects.map((project, index) => (
@@ -72,8 +83,10 @@ export function HomePage() {
           </Link>
         </div>
       </div>
+      <Divider />
 
       <SkillsSection />
+      <Divider />
 
       <ContactSection />
     </>
