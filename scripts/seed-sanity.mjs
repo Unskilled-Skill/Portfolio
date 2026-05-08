@@ -140,7 +140,23 @@ const docs = [
   ...skills.map(skillDocument),
 ];
 
+const legacyPrivateIds = [
+  ...Object.keys(fallbackSiteSettings).map((locale) => `siteSettings.${locale}`),
+  ...projects.flatMap((project) => [
+    `project.${project.slug}`,
+    `project.en-${project.slug}`,
+  ]),
+  ...skills.flatMap((skill) => [
+    `skill.${skill.label.replace(/[^a-z0-9-]/gi, '-').toLowerCase()}`,
+    `skill.en-${skill.label.replace(/[^a-z0-9-]/gi, '-').toLowerCase()}`,
+  ]),
+];
+
 let transaction = client.transaction();
+for (const id of legacyPrivateIds) {
+  transaction = transaction.delete(id);
+}
+
 for (const doc of docs) {
   transaction = transaction.createOrReplace(doc);
 }
