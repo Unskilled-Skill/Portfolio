@@ -4,29 +4,50 @@ export const projectType = defineType({
   name: 'project',
   title: 'Project',
   type: 'document',
+  groups: [
+    { name: 'overview', title: 'Overview', default: true },
+    { name: 'media', title: 'Media' },
+    { name: 'content', title: 'Content' },
+    { name: 'navigation', title: 'Navigation' },
+  ],
+  orderings: [
+    {
+      title: 'Portfolio order',
+      name: 'portfolioOrder',
+      by: [{ field: 'navOrder', direction: 'asc' }],
+    },
+    {
+      title: 'Title',
+      name: 'titleAsc',
+      by: [{ field: 'title', direction: 'asc' }],
+    },
+  ],
   fields: [
-    defineField({ name: 'title', title: 'Title', type: 'string', validation: (rule) => rule.required() }),
+    defineField({ name: 'title', title: 'Title', type: 'string', group: 'overview', validation: (rule) => rule.required() }),
     defineField({
       name: 'slug',
       title: 'Slug',
       type: 'slug',
+      group: 'overview',
       options: { source: 'title' },
       validation: (rule) => rule.required(),
     }),
-    defineField({ name: 'subtitle', title: 'Subtitle', type: 'string', validation: (rule) => rule.required() }),
-    defineField({ name: 'heroImage', title: 'Hero Image', type: 'image', options: { hotspot: true } }),
+    defineField({ name: 'subtitle', title: 'Subtitle', type: 'string', group: 'overview', validation: (rule) => rule.required() }),
+    defineField({ name: 'heroImage', title: 'Hero Image', type: 'image', group: 'media', options: { hotspot: true } }),
     defineField({
       name: 'heroImageFallback',
       title: 'Hero Image Fallback Path',
       type: 'string',
+      group: 'media',
       description: 'Optional public path such as /images/ar-game1.png.',
     }),
-    defineField({ name: 'youtubeId', title: 'YouTube ID', type: 'string' }),
-    defineField({ name: 'overview', title: 'Overview', type: 'text', rows: 4, validation: (rule) => rule.required() }),
+    defineField({ name: 'youtubeId', title: 'YouTube ID', type: 'string', group: 'media' }),
+    defineField({ name: 'overview', title: 'Overview', type: 'text', rows: 4, group: 'overview', validation: (rule) => rule.required().min(40).max(500) }),
     defineField({
       name: 'meta',
       title: 'Meta',
       type: 'object',
+      group: 'overview',
       fields: [
         defineField({ name: 'role', title: 'Role', type: 'string' }),
         defineField({ name: 'tools', title: 'Tools', type: 'string' }),
@@ -37,6 +58,7 @@ export const projectType = defineType({
       name: 'gallery',
       title: 'Gallery',
       type: 'array',
+      group: 'media',
       of: [
         defineArrayMember({
           type: 'object',
@@ -56,12 +78,15 @@ export const projectType = defineType({
       name: 'highlights',
       title: 'Highlights',
       type: 'array',
+      group: 'overview',
       of: [defineArrayMember({ type: 'string' })],
+      validation: (rule) => rule.max(6),
     }),
     defineField({
       name: 'bodySections',
       title: 'Body Sections',
       type: 'array',
+      group: 'content',
       of: [
         defineArrayMember({
           type: 'object',
@@ -86,22 +111,24 @@ export const projectType = defineType({
         }),
       ],
     }),
-    defineField({ name: 'navOrder', title: 'Navigation Order', type: 'number', validation: (rule) => rule.required() }),
-    defineField({ name: 'featured', title: 'Featured on Home', type: 'boolean', initialValue: false }),
+    defineField({ name: 'navOrder', title: 'Navigation Order', type: 'number', group: 'navigation', validation: (rule) => rule.required().integer().min(1) }),
+    defineField({ name: 'featured', title: 'Featured on Home', type: 'boolean', group: 'navigation', initialValue: false }),
     defineField({
       name: 'spotlightDirection',
       title: 'Spotlight Direction',
       type: 'string',
+      group: 'navigation',
       options: { list: ['left', 'right'], layout: 'radio' },
       initialValue: 'right',
       validation: (rule) => rule.required(),
     }),
-    defineField({ name: 'prevSlug', title: 'Previous Project Slug', type: 'string' }),
-    defineField({ name: 'nextSlug', title: 'Next Project Slug', type: 'string' }),
+    defineField({ name: 'prevSlug', title: 'Previous Project Slug', type: 'string', group: 'navigation' }),
+    defineField({ name: 'nextSlug', title: 'Next Project Slug', type: 'string', group: 'navigation' }),
     defineField({
       name: 'process',
       title: 'Process',
       type: 'array',
+      group: 'content',
       of: [
         defineArrayMember({
           type: 'object',

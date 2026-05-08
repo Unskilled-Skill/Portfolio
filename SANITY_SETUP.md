@@ -20,6 +20,7 @@ VITE_SANITY_API_VERSION=2026-05-08
 VITE_SANITY_USE_CDN=true
 SANITY_STUDIO_PROJECT_ID=sl7hlzy0
 SANITY_STUDIO_DATASET=production
+SANITY_STUDIO_API_VERSION=2026-05-08
 ```
 
 Only the `VITE_` variables are exposed to the portfolio frontend. The `SANITY_STUDIO_` variables are used by Sanity Studio.
@@ -57,4 +58,4 @@ npm run sanity:seed
 
 ## Notes
 
-Sanity Studio v4 is installed because this portfolio currently uses React 18. Sanity Studio v5 requires React 19.2 or newer.
+This project uses React 19 and Sanity Studio 5. The Studio navigation is grouped into featured projects, all projects, coming soon projects, and skills. Vision is configured against the same API version and dataset as the portfolio.

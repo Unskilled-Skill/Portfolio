@@ -1,13 +1,13 @@
 import { useState } from 'react';
 import type { LucideIcon } from 'lucide-react';
-import { Github, Linkedin, Palette, Mail, Copy, Check, Download } from 'lucide-react';
+import { BriefcaseBusiness, CodeXml, Palette, Mail, Copy, Check, Download } from 'lucide-react';
 import { socialLinks } from '../../data/social';
 import { FadeIn } from '../ui/FadeIn';
 import { identity } from '../../data/site';
 
 const iconMap: Record<string, LucideIcon> = {
-  Github,
-  Linkedin,
+  Github: CodeXml,
+  Linkedin: BriefcaseBusiness,
   Palette,
   Mail,
 };

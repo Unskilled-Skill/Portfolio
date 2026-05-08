@@ -4,6 +4,18 @@ export const skillType = defineType({
   name: 'skill',
   title: 'Skill',
   type: 'document',
+  orderings: [
+    {
+      title: 'Display order',
+      name: 'displayOrder',
+      by: [{ field: 'order', direction: 'asc' }],
+    },
+    {
+      title: 'Label',
+      name: 'labelAsc',
+      by: [{ field: 'label', direction: 'asc' }],
+    },
+  ],
   fields: [
     defineField({ name: 'label', title: 'Label', type: 'string', validation: (rule) => rule.required() }),
     defineField({
@@ -14,7 +26,7 @@ export const skillType = defineType({
       validation: (rule) => rule.required(),
     }),
     defineField({ name: 'description', title: 'Description', type: 'string', validation: (rule) => rule.required() }),
-    defineField({ name: 'order', title: 'Order', type: 'number', initialValue: 0 }),
+    defineField({ name: 'order', title: 'Order', type: 'number', initialValue: 0, validation: (rule) => rule.required().integer().min(0) }),
   ],
   preview: {
     select: {
