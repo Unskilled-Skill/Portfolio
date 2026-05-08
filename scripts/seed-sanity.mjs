@@ -200,8 +200,12 @@ const legacyPrivateIds = [
   ]),
 ];
 
+const legacyDocumentIds = await client.fetch(
+  '*[_type in ["project", "skill", "siteSettings"] && !defined(language)]._id',
+);
+
 let transaction = client.transaction();
-for (const id of legacyPrivateIds) {
+for (const id of [...legacyPrivateIds, ...legacyDocumentIds]) {
   transaction = transaction.delete(id);
 }
 
