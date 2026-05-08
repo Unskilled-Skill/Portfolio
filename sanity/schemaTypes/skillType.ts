@@ -17,6 +17,20 @@ export const skillType = defineType({
     },
   ],
   fields: [
+    defineField({
+      name: 'language',
+      title: 'Language',
+      type: 'string',
+      options: {
+        list: [
+          { title: 'English', value: 'en' },
+          { title: 'Dutch', value: 'nl' },
+        ],
+        layout: 'radio',
+      },
+      initialValue: 'en',
+      validation: (rule) => rule.required(),
+    }),
     defineField({ name: 'label', title: 'Label', type: 'string', validation: (rule) => rule.required() }),
     defineField({
       name: 'icon',

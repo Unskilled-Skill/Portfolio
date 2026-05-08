@@ -1,7 +1,9 @@
 import { useParams, Navigate, Link } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import { ArrowLeft, ArrowRight, CheckCircle } from 'lucide-react';
-import { useProjects } from '../hooks/useSanityContent';
+import { useProjects, useSiteSettings } from '../hooks/useSanityContent';
+import { useLocale } from '../hooks/useLocale';
+import { withLocale } from '../lib/locale';
 import { Breadcrumbs } from '../components/ui/Breadcrumbs';
 import { VideoEmbed } from '../components/ui/VideoEmbed';
 import { ProjectGrid } from '../components/ui/ProjectGrid';
@@ -10,7 +12,10 @@ import { FadeIn } from '../components/ui/FadeIn';
 
 export function ProjectPage() {
   const { slug } = useParams<{ slug: string }>();
-  const { projects, loading } = useProjects();
+  const { locale } = useLocale();
+  const { projects, loading } = useProjects(locale);
+  const { settings } = useSiteSettings(locale);
+  const { ui } = settings;
   const project = slug ? projects.find((p) => p.slug === slug) : undefined;
 
   if (!project && loading) {
@@ -18,7 +23,7 @@ export function ProjectPage() {
   }
 
   if (!project) {
-    return <Navigate to="/" replace />;
+    return <Navigate to={withLocale('/', locale)} replace />;
   }
 
   const prevProject = projects.find((p) => p.slug === project.prevSlug);
@@ -48,8 +53,8 @@ export function ProjectPage() {
           <FadeIn direction="up" threshold={0}>
             <Breadcrumbs
               items={[
-                { label: 'Home', href: '/' },
-                { label: 'Projects', href: '/#projects' },
+                { label: ui.home, href: withLocale('/', locale) },
+                { label: ui.projects, href: `${withLocale('/', locale)}#projects` },
                 { label: project.title },
               ]}
             />
@@ -91,7 +96,7 @@ export function ProjectPage() {
         <section className="py-16">
           <div className="mx-auto max-w-4xl px-6">
             <FadeIn direction="up">
-              <h2 className="mb-8 text-center text-2xl font-thin tracking-tight">Project Video</h2>
+              <h2 className="mb-8 text-center text-2xl font-thin tracking-tight">{ui.projectVideo}</h2>
               <VideoEmbed youtubeId={project.youtubeId} title={project.title} />
             </FadeIn>
           </div>
@@ -131,7 +136,7 @@ export function ProjectPage() {
         <div className="mx-auto max-w-4xl px-6">
           <FadeIn direction="up">
             <h2 className="mb-12 text-center text-2xl font-thin tracking-tight">
-              Development Process
+              {ui.processTitle}
             </h2>
           </FadeIn>
           <div className="relative">
@@ -168,7 +173,7 @@ export function ProjectPage() {
       <section className="py-16">
         <div className="mx-auto max-w-4xl px-6">
           <FadeIn direction="up">
-            <h2 className="mb-8 text-center text-2xl font-thin tracking-tight">Key Highlights</h2>
+            <h2 className="mb-8 text-center text-2xl font-thin tracking-tight">{ui.keyHighlights}</h2>
           </FadeIn>
           <div className="grid gap-4 sm:grid-cols-2">
             {project.highlights.map((highlight, i) => (
@@ -200,7 +205,7 @@ export function ProjectPage() {
         <div className="mx-auto flex max-w-4xl items-center justify-between px-6">
           {prevProject ? (
             <Link
-              to={`/projects/${prevProject.slug}`}
+              to={withLocale(`/projects/${prevProject.slug}`, locale)}
               className="group flex items-center gap-3 rounded-lg border border-white/10 px-5 py-3 font-light text-white/60 transition-all duration-300 hover:border-accent/50 hover:text-white"
             >
               <ArrowLeft size={16} className="transition-transform group-hover:-translate-x-1" />
@@ -209,7 +214,7 @@ export function ProjectPage() {
           ) : <div />}
           {nextProject ? (
             <Link
-              to={`/projects/${nextProject.slug}`}
+              to={withLocale(`/projects/${nextProject.slug}`, locale)}
               className="group flex items-center gap-3 rounded-lg border border-white/10 px-5 py-3 font-light text-white/60 transition-all duration-300 hover:border-accent/50 hover:text-white"
             >
               {nextProject.title}

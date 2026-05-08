@@ -51,3 +51,89 @@ export interface SocialLink {
   url: string;
   icon: string;
 }
+
+export type Locale = 'en' | 'nl';
+
+export interface LocalizedText {
+  en: string;
+  nl: string;
+}
+
+export interface CoreSkillEntry {
+  icon: string;
+  label: string;
+  detail: string;
+}
+
+export type TechCategory = 'engine' | 'language' | 'tool' | 'design';
+
+export interface TechEntry {
+  label: string;
+  icon: string;
+  category: TechCategory;
+}
+
+export interface SiteIdentity {
+  name: string;
+  email: string;
+  cvPath: string;
+  avatar: string;
+  tagline: string;
+}
+
+export interface SiteSeo {
+  siteTitle: string;
+  description: string;
+  siteUrl: string;
+}
+
+export interface SiteAbout {
+  paragraphs: string[];
+  institution: string;
+  coreSkills: CoreSkillEntry[];
+}
+
+export interface SiteUiText {
+  back: string;
+  contact: string;
+  copyEmail: string;
+  copied: string;
+  downloadCv: string;
+  expertise: string;
+  featured: string;
+  goBack: string;
+  goHome: string;
+  home: string;
+  keyHighlights: string;
+  languageEnglish: string;
+  languageDutch: string;
+  notFoundDescription: string;
+  notFoundEyebrow: string;
+  notFoundTitle: string;
+  processTitle: string;
+  projectVideo: string;
+  projects: string;
+  readMore: string;
+  skillsTitle: string;
+  statsProjects: string;
+  statsTechnologies: string;
+  statsYears: string;
+  technologiesTitle: string;
+  viewAllProjects: string;
+  viewProject: string;
+  viewProjects: string;
+  whoIAm: string;
+  work: string;
+}
+
+export interface SiteSettings {
+  locale: Locale;
+  identity: SiteIdentity;
+  seo: SiteSeo;
+  roles: string[];
+  about: SiteAbout;
+  techStack: TechEntry[];
+  socialLinks: SocialLink[];
+  startYear: number;
+  ui: SiteUiText;
+}

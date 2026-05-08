@@ -30,9 +30,12 @@ function AnimatedRoutes() {
       >
         <Suspense fallback={null}>
           <Routes location={location}>
-            <Route path="/"                 element={<HomePage />} />
-            <Route path="/projects"         element={<ProjectsPage />} />
-            <Route path="/projects/:slug"   element={<ProjectPage />} />
+            <Route path="/"                  element={<HomePage />} />
+            <Route path="/nl"                element={<HomePage />} />
+            <Route path="/projects"          element={<ProjectsPage />} />
+            <Route path="/nl/projects"       element={<ProjectsPage />} />
+            <Route path="/projects/:slug"    element={<ProjectPage />} />
+            <Route path="/nl/projects/:slug" element={<ProjectPage />} />
             <Route path="*"                 element={<NotFound />} />
           </Routes>
         </Suspense>

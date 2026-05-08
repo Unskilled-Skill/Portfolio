@@ -3,10 +3,14 @@ import { useSmoothScroll } from '../../hooks/useSmoothScroll';
 import { FadeIn } from '../ui/FadeIn';
 import { AnimatedRoles } from '../ui/AnimatedRoles';
 import { MagneticButton } from '../ui/MagneticButton';
-import { identity } from '../../data/site';
+import { useLocale } from '../../hooks/useLocale';
+import { useSiteSettings } from '../../hooks/useSanityContent';
 
 export function HeroSection() {
   const { scrollTo } = useSmoothScroll();
+  const { locale } = useLocale();
+  const { settings } = useSiteSettings(locale);
+  const { identity, ui } = settings;
 
   return (
     <section className="relative flex min-h-screen items-center justify-center overflow-hidden">
@@ -65,7 +69,7 @@ export function HeroSection() {
                 onClick={() => scrollTo('projects')}
                 className="inline-flex items-center gap-2 rounded-lg bg-accent px-8 py-3 font-light text-white shadow-lg shadow-accent/20 transition-all duration-300 hover:bg-accent-dark hover:shadow-accent/40"
               >
-                View Projects
+                {ui.viewProjects}
               </button>
             </MagneticButton>
             <MagneticButton>
@@ -75,7 +79,7 @@ export function HeroSection() {
                 className="inline-flex items-center gap-2 rounded-lg border border-white/10 px-8 py-3 font-light text-white/70 transition-all duration-300 hover:border-accent/50 hover:text-white"
               >
                 <Download size={16} />
-                Download CV
+                {ui.downloadCv}
               </a>
             </MagneticButton>
           </div>

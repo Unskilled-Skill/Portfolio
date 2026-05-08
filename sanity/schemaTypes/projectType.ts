@@ -23,6 +23,21 @@ export const projectType = defineType({
     },
   ],
   fields: [
+    defineField({
+      name: 'language',
+      title: 'Language',
+      type: 'string',
+      group: 'overview',
+      options: {
+        list: [
+          { title: 'English', value: 'en' },
+          { title: 'Dutch', value: 'nl' },
+        ],
+        layout: 'radio',
+      },
+      initialValue: 'en',
+      validation: (rule) => rule.required(),
+    }),
     defineField({ name: 'title', title: 'Title', type: 'string', group: 'overview', validation: (rule) => rule.required() }),
     defineField({
       name: 'slug',
@@ -146,8 +161,13 @@ export const projectType = defineType({
   preview: {
     select: {
       title: 'title',
-      subtitle: 'subtitle',
+      subtitle: 'language',
       media: 'heroImage',
     },
+    prepare: ({ title, subtitle, media }) => ({
+      title,
+      subtitle: `${subtitle === 'nl' ? 'Dutch' : 'English'} project`,
+      media,
+    }),
   },
 });

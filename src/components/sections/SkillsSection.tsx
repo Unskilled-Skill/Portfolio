@@ -1,9 +1,14 @@
 import { useSkills } from '../../hooks/useSanityContent';
+import { useSiteSettings } from '../../hooks/useSanityContent';
+import { useLocale } from '../../hooks/useLocale';
 import { SkillCard } from '../ui/SkillCard';
 import { FadeIn } from '../ui/FadeIn';
 
 export function SkillsSection() {
-  const { skills } = useSkills();
+  const { locale } = useLocale();
+  const { skills } = useSkills(locale);
+  const { settings } = useSiteSettings(locale);
+  const { ui } = settings;
 
   return (
     <section id="skills" className="py-24 bg-surface/30">
@@ -11,10 +16,10 @@ export function SkillsSection() {
         <FadeIn direction="up">
           <div className="mb-16 text-center">
             <p className="mb-2 text-sm font-light uppercase tracking-[0.2em] text-accent">
-              Expertise
+              {ui.expertise}
             </p>
             <h2 className="text-3xl font-thin tracking-tight md:text-4xl">
-              Core Skills
+              {ui.skillsTitle}
             </h2>
           </div>
         </FadeIn>

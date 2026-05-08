@@ -1,7 +1,7 @@
 import type { LucideIcon } from 'lucide-react';
 import { BriefcaseBusiness, CodeXml, Palette, Mail } from 'lucide-react';
-import { socialLinks } from '../../data/social';
-import { identity } from '../../data/site';
+import { useLocale } from '../../hooks/useLocale';
+import { useSiteSettings } from '../../hooks/useSanityContent';
 
 const iconMap: Record<string, LucideIcon> = {
   Github: CodeXml,
@@ -11,6 +11,10 @@ const iconMap: Record<string, LucideIcon> = {
 };
 
 export function Footer() {
+  const { locale } = useLocale();
+  const { settings } = useSiteSettings(locale);
+  const { identity, socialLinks } = settings;
+
   return (
     <footer className="border-t border-white/5 bg-surface/50">
       <div className="mx-auto max-w-6xl px-6 py-10">

@@ -3,7 +3,9 @@ import { Link, useLocation } from 'react-router-dom';
 import { Menu, X, ArrowLeft } from 'lucide-react';
 import { useSmoothScroll } from '../../hooks/useSmoothScroll';
 import { useScrollSpy } from '../../hooks/useScrollSpy';
-import { identity } from '../../data/site';
+import { useLocale } from '../../hooks/useLocale';
+import { useSiteSettings } from '../../hooks/useSanityContent';
+import { localizedPath, withLocale } from '../../lib/locale';
 
 const NAV_SECTIONS = ['projects', 'skills', 'contact'];
 
@@ -11,9 +13,12 @@ export function Header() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const location = useLocation();
+  const { locale } = useLocale();
+  const { settings } = useSiteSettings(locale);
+  const { identity, ui } = settings;
   const { scrollTo, scrollToTop } = useSmoothScroll();
-  const isProjectPage   = location.pathname.startsWith('/projects/');
-  const isProjectsList  = location.pathname === '/projects';
+  const isProjectPage   = location.pathname.startsWith('/projects/') || location.pathname.startsWith('/nl/projects/');
+  const isProjectsList  = location.pathname === '/projects' || location.pathname === '/nl/projects';
   const activeSection   = useScrollSpy(NAV_SECTIONS, 120);
 
   useEffect(() => {
@@ -46,9 +51,9 @@ export function Header() {
     >
       <div className="mx-auto flex max-w-7xl items-center justify-between px-8 py-4 lg:px-16">
         <Link
-          to="/"
+          to={withLocale('/', locale)}
           onClick={(e) => {
-            if (location.pathname === '/') {
+            if (location.pathname === '/' || location.pathname === '/nl') {
               e.preventDefault();
               scrollToTop();
             }
@@ -60,11 +65,11 @@ export function Header() {
 
         {isProjectPage ? (
           <Link
-            to="/"
+            to={withLocale('/', locale)}
             className="flex items-center gap-2 text-sm font-light text-white/70 transition-colors hover:text-accent"
           >
             <ArrowLeft size={16} />
-            Back
+            {ui.back}
           </Link>
         ) : (
           <>
@@ -73,20 +78,26 @@ export function Header() {
                 onClick={() => scrollToTop()}
                 className={navLinkClass(!activeSection)}
               >
-                Home
+                {ui.home}
               </button>
               <Link
-                to="/projects"
+                to={withLocale('/projects', locale)}
                 className={navLinkClass(isProjectsList || activeSection === 'projects' || activeSection === 'skills')}
               >
-                Projects
+                {ui.projects}
               </Link>
               <button
                 onClick={() => navAction('contact')}
                 className={navLinkClass(activeSection === 'contact')}
               >
-                Contact
+                {ui.contact}
               </button>
+              <Link
+                to={localizedPath(location.pathname, locale === 'en' ? 'nl' : 'en')}
+                className="rounded-full border border-white/10 px-3 py-1 text-xs font-light uppercase tracking-[0.16em] text-white/50 transition-colors hover:border-accent hover:text-accent"
+              >
+                {locale === 'en' ? 'NL' : 'EN'}
+              </Link>
             </nav>
 
             <button
@@ -108,20 +119,26 @@ export function Header() {
               onClick={() => { setMenuOpen(false); scrollToTop(); }}
               className={`text-left text-sm font-light transition-colors ${!activeSection ? 'text-white' : 'text-white/70 hover:text-white'}`}
             >
-              Home
+              {ui.home}
             </button>
             <Link
-              to="/projects"
+              to={withLocale('/projects', locale)}
               className={`text-left text-sm font-light transition-colors ${isProjectsList || activeSection === 'projects' || activeSection === 'skills' ? 'text-accent' : 'text-white/70 hover:text-white'}`}
             >
-              Projects
+              {ui.projects}
             </Link>
             <button
               onClick={() => navAction('contact')}
               className={`text-left text-sm font-light transition-colors ${activeSection === 'contact' ? 'text-accent' : 'text-white/70 hover:text-white'}`}
             >
-              Contact
+              {ui.contact}
             </button>
+            <Link
+              to={localizedPath(location.pathname, locale === 'en' ? 'nl' : 'en')}
+              className="text-left text-sm font-light text-white/70 transition-colors hover:text-accent"
+            >
+              {locale === 'en' ? ui.languageDutch : ui.languageEnglish}
+            </Link>
           </div>
         </nav>
       )}

@@ -1,4 +1,4 @@
-import {BookIcon, BulbOutlineIcon, DocumentsIcon, StarIcon} from '@sanity/icons';
+import {BookIcon, BulbOutlineIcon, DocumentsIcon, EarthGlobeIcon, StarIcon} from '@sanity/icons';
 import type {StructureResolver} from 'sanity/structure';
 
 const projectOrdering = [{field: 'navOrder', direction: 'asc' as const}];
@@ -8,6 +8,17 @@ export const structure: StructureResolver = (S) =>
   S.list()
     .title('Portfolio CMS')
     .items([
+      S.listItem()
+        .title('Site settings')
+        .icon(EarthGlobeIcon)
+        .child(
+          S.documentList()
+            .title('Site settings')
+            .schemaType('siteSettings')
+            .filter('_type == "siteSettings"')
+            .defaultOrdering([{field: 'language', direction: 'asc'}]),
+        ),
+      S.divider(),
       S.listItem()
         .title('Featured projects')
         .icon(StarIcon)

@@ -1,31 +1,7 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useInView } from '../../hooks/useInView';
-import { projects } from '../../data/projects';
-import { startYear } from '../../data/site';
-
-// ── Derive stats from live project data ───────────────────────────────────────
-
-const totalProjects = projects.length;
-
-// Parse every meta.tools string into individual tool names, deduplicate
-const uniqueTechnologies = new Set(
-  projects.flatMap((p) =>
-    p.meta.tools
-      .split(/[,•]/)
-      .map((t) => t.trim())
-      .filter(Boolean)
-  )
-).size;
-
-const yearsExperience = new Date().getFullYear() - startYear;
-
-const STATS = [
-  { value: totalProjects,       suffix: '',  label: 'Projects'        },
-  { value: uniqueTechnologies,  suffix: '+', label: 'Technologies'     },
-  { value: yearsExperience,     suffix: '',  label: 'Years Experience' },
-];
-
-// ─────────────────────────────────────────────────────────────────────────────
+import { useLocale } from '../../hooks/useLocale';
+import { useProjects, useSiteSettings } from '../../hooks/useSanityContent';
 
 function Counter({ target, suffix = '' }: { target: number; suffix?: string }) {
   const [count, setCount] = useState(0);
@@ -39,7 +15,7 @@ function Counter({ target, suffix = '' }: { target: number; suffix?: string }) {
     const start = performance.now();
     const tick = (now: number) => {
       const progress = Math.min((now - start) / duration, 1);
-      const eased    = 1 - Math.pow(1 - progress, 3);
+      const eased = 1 - Math.pow(1 - progress, 3);
       setCount(Math.round(eased * target));
       if (progress < 1) requestAnimationFrame(tick);
     };
@@ -54,10 +30,32 @@ function Counter({ target, suffix = '' }: { target: number; suffix?: string }) {
 }
 
 export function StatsSection() {
+  const { locale } = useLocale();
+  const { projects } = useProjects(locale);
+  const { settings } = useSiteSettings(locale);
+  const { startYear, ui } = settings;
+
+  const stats = useMemo(() => {
+    const uniqueTechnologies = new Set(
+      projects.flatMap((project) =>
+        project.meta.tools
+          .split(/[,•]/)
+          .map((tool) => tool.trim())
+          .filter(Boolean),
+      ),
+    ).size;
+
+    return [
+      { value: projects.length, suffix: '', label: ui.statsProjects },
+      { value: uniqueTechnologies, suffix: '+', label: ui.statsTechnologies },
+      { value: new Date().getFullYear() - startYear, suffix: '', label: ui.statsYears },
+    ];
+  }, [projects, startYear, ui.statsProjects, ui.statsTechnologies, ui.statsYears]);
+
   return (
     <div className="border-y border-white/5 bg-surface/20 py-12">
       <div className="mx-auto flex max-w-2xl flex-wrap items-center justify-center gap-x-16 gap-y-8 px-8">
-        {STATS.map(({ value, suffix, label }) => (
+        {stats.map(({ value, suffix, label }) => (
           <div key={label} className="flex flex-col items-center gap-2">
             <span className="font-display text-4xl font-bold text-white">
               <Counter target={value} suffix={suffix} />

@@ -9,8 +9,9 @@ import { ProjectSpotlight } from '../components/sections/ProjectSpotlight';
 import { SkillsSection } from '../components/sections/SkillsSection';
 import { ContactSection } from '../components/sections/ContactSection';
 import { StatsSection } from '../components/sections/StatsSection';
-import { useProjects } from '../hooks/useSanityContent';
-import { seo, identity } from '../data/site';
+import { useProjects, useSiteSettings } from '../hooks/useSanityContent';
+import { useLocale } from '../hooks/useLocale';
+import { withLocale } from '../lib/locale';
 
 function Divider() {
   return (
@@ -22,7 +23,10 @@ function Divider() {
 
 export function HomePage() {
   const location = useLocation();
-  const { projects } = useProjects();
+  const { locale } = useLocale();
+  const { projects } = useProjects(locale);
+  const { settings } = useSiteSettings(locale);
+  const { seo, identity, ui } = settings;
 
   useEffect(() => {
     const state = location.state as { scrollTo?: string } | null;
@@ -66,14 +70,16 @@ export function HomePage() {
             project={project}
             direction={project.spotlightDirection}
             bgClass={index % 2 === 0 ? '' : 'bg-surface/30'}
+            readMoreLabel={ui.readMore}
+            projectHref={withLocale(`/projects/${project.slug}`, locale)}
           />
         ))}
         <div className="flex justify-center py-12 border-t border-white/5">
           <Link
-            to="/projects"
+            to={withLocale('/projects', locale)}
             className="inline-flex items-center gap-2 text-sm font-light text-white/50 transition-colors hover:text-accent hover:gap-3"
           >
-            View all projects
+            {ui.viewAllProjects}
             <ArrowRight size={15} />
           </Link>
         </div>

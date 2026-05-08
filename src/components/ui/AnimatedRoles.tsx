@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { motion, useReducedMotion } from 'framer-motion';
-import { roles as ROLES } from '../../data/site';
+import { useLocale } from '../../hooks/useLocale';
+import { useSiteSettings } from '../../hooks/useSanityContent';
 
 const container = {
   hidden: {},
@@ -22,15 +23,18 @@ const item = {
 export function AnimatedRoles() {
   const [activeIndex, setActiveIndex] = useState(0);
   const shouldReduceMotion = useReducedMotion();
+  const { locale } = useLocale();
+  const { settings } = useSiteSettings(locale);
+  const roles = settings.roles;
 
   // Cycle the active highlight every 2.4s (skip when reduced-motion preferred)
   useEffect(() => {
-    if (shouldReduceMotion) return;
+    if (shouldReduceMotion || roles.length === 0) return;
     const id = setInterval(() => {
-      setActiveIndex((i) => (i + 1) % ROLES.length);
+      setActiveIndex((i) => (i + 1) % roles.length);
     }, 2400);
     return () => clearInterval(id);
-  }, [shouldReduceMotion]);
+  }, [roles.length, shouldReduceMotion]);
 
   return (
     <motion.div
@@ -39,7 +43,7 @@ export function AnimatedRoles() {
       animate="show"
       className="flex flex-wrap items-center justify-center gap-x-6 gap-y-3"
     >
-      {ROLES.map((role, i) => (
+      {roles.map((role, i) => (
         <motion.span
           key={role}
           variants={item}

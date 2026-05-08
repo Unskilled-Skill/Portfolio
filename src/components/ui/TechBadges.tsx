@@ -2,7 +2,9 @@ import {
   Gamepad2, Code2, Terminal, Box, Layers, Eye, MousePointer2,
   type LucideIcon,
 } from 'lucide-react';
-import { techStack, type TechCategory } from '../../data/site';
+import type { TechCategory } from '../../types';
+import { useLocale } from '../../hooks/useLocale';
+import { useSiteSettings } from '../../hooks/useSanityContent';
 
 const iconMap: Record<string, LucideIcon> = {
   Gamepad2, Code2, Terminal, Box, Layers, Eye, MousePointer2,
@@ -16,10 +18,14 @@ const categoryColor: Record<TechCategory, string> = {
 };
 
 export function TechBadges() {
+  const { locale } = useLocale();
+  const { settings } = useSiteSettings(locale);
+  const { techStack, ui } = settings;
+
   return (
     <div className="mt-14 border-t border-white/5 pt-10">
       <p className="mb-5 text-center text-xs font-light uppercase tracking-[0.25em] text-white/30">
-        Technologies & Tools
+        {ui.technologiesTitle}
       </p>
       <div className="flex flex-wrap justify-center gap-3">
         {techStack.map(({ label, icon, category }) => {

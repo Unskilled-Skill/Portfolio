@@ -9,9 +9,17 @@ interface ProjectSpotlightProps {
   project: Project;
   direction: 'left' | 'right';
   bgClass?: string;
+  readMoreLabel?: string;
+  projectHref?: string;
 }
 
-export function ProjectSpotlight({ project, direction, bgClass = '' }: ProjectSpotlightProps) {
+export function ProjectSpotlight({
+  project,
+  direction,
+  bgClass = '',
+  readMoreLabel = 'Read More',
+  projectHref = `/projects/${project.slug}`,
+}: ProjectSpotlightProps) {
   const contentFadeDirection = direction === 'right' ? 'left' : 'right';
 
   const contentBlock = (
@@ -44,10 +52,10 @@ export function ProjectSpotlight({ project, direction, bgClass = '' }: ProjectSp
       <div>
         <MagneticButton>
           <Link
-            to={`/projects/${project.slug}`}
+            to={projectHref}
             className="inline-flex items-center gap-2 rounded-lg bg-accent px-6 py-3 font-light text-white shadow-lg shadow-accent/20 transition-all duration-300 hover:bg-accent-dark hover:shadow-accent/40 hover:gap-3"
           >
-            Read More
+            {readMoreLabel}
             <ArrowRight size={16} />
           </Link>
         </MagneticButton>

@@ -9,9 +9,14 @@ import { getCliClient } from 'sanity/cli';
 const require = createRequire(import.meta.url);
 const root = resolve(fileURLToPath(new URL('..', import.meta.url)));
 const { transform: transformSync } = sucrase;
+const moduleCache = new Map();
 
 function loadTsModule(relativePath) {
   const filename = resolve(root, relativePath);
+  if (moduleCache.has(filename)) {
+    return moduleCache.get(filename).exports;
+  }
+
   const source = readFileSync(filename, 'utf8');
   const { code } = transformSync(source, {
     transforms: ['typescript', 'imports'],
@@ -19,9 +24,17 @@ function loadTsModule(relativePath) {
   });
 
   const mod = { exports: {} };
+  moduleCache.set(filename, mod);
   const localRequire = (specifier) => {
     if (specifier === '../types') {
       return {};
+    }
+
+    if (specifier.startsWith('.')) {
+      const childPath = resolve(filename, '..', `${specifier}.ts`);
+      if (childPath.startsWith(root)) {
+        return loadTsModule(childPath.slice(root.length + 1));
+      }
     }
 
     return require(specifier);
@@ -33,6 +46,7 @@ function loadTsModule(relativePath) {
 
 const { projects } = loadTsModule('src/data/projects.ts');
 const { skills } = loadTsModule('src/data/skills.ts');
+const { fallbackSiteSettings } = loadTsModule('src/data/site.ts');
 
 const projectId = process.env.SANITY_STUDIO_PROJECT_ID || process.env.VITE_SANITY_PROJECT_ID || 'sl7hlzy0';
 const dataset = process.env.SANITY_STUDIO_DATASET || process.env.VITE_SANITY_DATASET || 'production';
@@ -52,8 +66,9 @@ const documentId = (type, slug) => `${type}.${slug.replace(/[^a-z0-9-]/gi, '-').
 
 function projectDocument(project) {
   return {
-    _id: documentId('project', project.slug),
+    _id: documentId('project', `en-${project.slug}`),
     _type: 'project',
+    language: 'en',
     title: project.title,
     slug: {
       _type: 'slug',
@@ -89,14 +104,38 @@ function projectDocument(project) {
 
 function skillDocument(skill, index) {
   return {
-    _id: documentId('skill', skill.label),
+    _id: documentId('skill', `en-${skill.label}`),
     _type: 'skill',
+    language: 'en',
     ...skill,
     order: index + 1,
   };
 }
 
+function siteSettingsDocument(settings) {
+  return {
+    _id: documentId('siteSettings', settings.locale),
+    _type: 'siteSettings',
+    language: settings.locale,
+    identity: settings.identity,
+    seo: settings.seo,
+    roles: settings.roles,
+    about: settings.about,
+    techStack: settings.techStack.map((entry, index) => ({
+      _key: `${settings.locale}-tech-${index}`,
+      ...entry,
+    })),
+    socialLinks: settings.socialLinks.map((link, index) => ({
+      _key: `${settings.locale}-social-${index}`,
+      ...link,
+    })),
+    startYear: settings.startYear,
+    ui: settings.ui,
+  };
+}
+
 const docs = [
+  ...Object.values(fallbackSiteSettings).map(siteSettingsDocument),
   ...projects.map(projectDocument),
   ...skills.map(skillDocument),
 ];
@@ -107,4 +146,4 @@ for (const doc of docs) {
 }
 
 await transaction.commit();
-console.log(`Seeded ${projects.length} projects and ${skills.length} skills into ${projectId}/${dataset}.`);
+console.log(`Seeded ${Object.keys(fallbackSiteSettings).length} site settings, ${projects.length} projects, and ${skills.length} skills into ${projectId}/${dataset}.`);

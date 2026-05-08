@@ -1,6 +1,7 @@
-import type { Project, Skill } from '../types';
+import type { Locale, Project, SiteSettings, Skill } from '../types';
 import { projects as fallbackProjects } from '../data/projects';
 import { skills as fallbackSkills } from '../data/skills';
+import { fallbackSiteSettings } from '../data/site';
 
 const projectId = import.meta.env.VITE_SANITY_PROJECT_ID;
 const dataset = import.meta.env.VITE_SANITY_DATASET || 'production';
@@ -69,6 +70,7 @@ type SanityProject = Partial<Omit<Project, 'heroImage' | 'gallery'>> & {
 };
 
 const projectFields = `{
+  language,
   "slug": slug.current,
   title,
   subtitle,
@@ -93,6 +95,18 @@ const projectFields = `{
   prevSlug,
   nextSlug,
   process
+}`;
+
+const siteSettingsFields = `{
+  language,
+  identity,
+  seo,
+  roles,
+  about,
+  techStack,
+  socialLinks,
+  startYear,
+  ui
 }`;
 
 const normalizeProject = (project: SanityProject): Project => ({
@@ -132,35 +146,73 @@ export async function fetchProjects(): Promise<Project[]> {
   return sanityProjects.map(normalizeProject);
 }
 
-export async function fetchSkills(): Promise<Skill[]> {
-  const query = `*[_type == "skill"] | order(order asc) {icon, label, description}`;
+export async function fetchProjectsByLocale(locale: Locale): Promise<Project[]> {
+  const query = `*[_type == "project" && language == "${locale}"] | order(navOrder asc) ${projectFields}`;
+  const sanityProjects = await sanityFetch<SanityProject[]>(query);
+  return sanityProjects.map(normalizeProject);
+}
+
+export async function fetchSkills(locale: Locale): Promise<Skill[]> {
+  const languageFilter = ` && language == "${locale}"`;
+  const query = `*[_type == "skill"${languageFilter}] | order(order asc) {language, icon, label, description}`;
   return sanityFetch<Skill[]>(query);
 }
 
-export async function getProjects(): Promise<Project[]> {
+export async function fetchSiteSettings(locale: Locale): Promise<SiteSettings | null> {
+  const query = `*[_type == "siteSettings" && language in ["${locale}", "en"]] | order(language == "${locale}" desc)[0] ${siteSettingsFields}`;
+  return sanityFetch<SiteSettings | null>(query);
+}
+
+export async function getProjects(locale: Locale = 'en'): Promise<Project[]> {
   if (!isSanityConfigured) {
     return fallbackProjects;
   }
 
   try {
-    const sanityProjects = await fetchProjects();
-    return sanityProjects.length ? sanityProjects : fallbackProjects;
+    const sanityProjects = await fetchProjectsByLocale(locale);
+    if (sanityProjects.length) {
+      return sanityProjects;
+    }
+
+    const englishProjects = locale === 'en' ? [] : await fetchProjectsByLocale('en');
+    return englishProjects.length ? englishProjects : fallbackProjects;
   } catch (error) {
     console.warn(error);
     return fallbackProjects;
   }
 }
 
-export async function getSkills(): Promise<Skill[]> {
+export async function getSkills(locale: Locale = 'en'): Promise<Skill[]> {
   if (!isSanityConfigured) {
     return fallbackSkills;
   }
 
   try {
-    const sanitySkills = await fetchSkills();
-    return sanitySkills.length ? sanitySkills : fallbackSkills;
+    const sanitySkills = await fetchSkills(locale);
+    if (sanitySkills.length) {
+      return sanitySkills;
+    }
+
+    const englishSkills = locale === 'en' ? [] : await fetchSkills('en');
+    return englishSkills.length ? englishSkills : fallbackSkills;
   } catch (error) {
     console.warn(error);
     return fallbackSkills;
+  }
+}
+
+export async function getSiteSettings(locale: Locale = 'en'): Promise<SiteSettings> {
+  const fallback = fallbackSiteSettings[locale];
+
+  if (!isSanityConfigured) {
+    return fallback;
+  }
+
+  try {
+    const settings = await fetchSiteSettings(locale);
+    return settings ? { ...fallback, ...settings, locale } : fallback;
+  } catch (error) {
+    console.warn(error);
+    return fallback;
   }
 }

@@ -1,9 +1,9 @@
 import { useState } from 'react';
 import type { LucideIcon } from 'lucide-react';
 import { BriefcaseBusiness, CodeXml, Palette, Mail, Copy, Check, Download } from 'lucide-react';
-import { socialLinks } from '../../data/social';
 import { FadeIn } from '../ui/FadeIn';
-import { identity } from '../../data/site';
+import { useLocale } from '../../hooks/useLocale';
+import { useSiteSettings } from '../../hooks/useSanityContent';
 
 const iconMap: Record<string, LucideIcon> = {
   Github: CodeXml,
@@ -14,6 +14,9 @@ const iconMap: Record<string, LucideIcon> = {
 
 export function ContactSection() {
   const [copied, setCopied] = useState(false);
+  const { locale } = useLocale();
+  const { settings } = useSiteSettings(locale);
+  const { identity, socialLinks, ui } = settings;
 
   const copyEmail = async () => {
     try {
@@ -33,13 +36,13 @@ export function ContactSection() {
         <FadeIn direction="up">
           <div className="mb-12">
             <p className="mb-2 text-sm font-light uppercase tracking-[0.2em] text-accent">
-              Contact
+              {ui.contact}
             </p>
             <h2 className="mb-4 text-3xl font-thin tracking-tight md:text-4xl">
-              Let's Connect
+              {ui.contact}
             </h2>
             <p className="mx-auto max-w-md font-light text-white/55">
-              Open to freelance, collaborations, and what comes next — game dev, frontend, or anything creative. Let's build something.
+              {identity.tagline}
             </p>
           </div>
         </FadeIn>
@@ -51,7 +54,7 @@ export function ContactSection() {
               className="inline-flex items-center gap-2 rounded-lg bg-accent px-8 py-4 text-lg font-light text-white shadow-lg shadow-accent/20 transition-all duration-300 hover:bg-accent-dark hover:shadow-accent/40"
             >
               {copied ? <Check size={18} /> : <Copy size={18} />}
-              {copied ? 'Copied!' : 'Copy Email'}
+              {copied ? ui.copied : ui.copyEmail}
             </button>
             <a
               href={identity.cvPath}
@@ -59,7 +62,7 @@ export function ContactSection() {
               className="inline-flex items-center gap-2 rounded-lg border border-white/10 px-8 py-4 text-lg font-light text-white/70 transition-all duration-300 hover:border-accent/50 hover:text-white"
             >
               <Download size={18} />
-              Download CV
+              {ui.downloadCv}
             </a>
           </div>
           <p className="mt-4 text-sm font-light text-white/30">{identity.email}</p>

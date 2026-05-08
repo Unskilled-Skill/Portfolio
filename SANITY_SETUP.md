@@ -33,10 +33,20 @@ npm run studio
 
 The Studio uses these schema types:
 
+- `siteSettings`
 - `project`
 - `skill`
 
 Local Studio URL: `http://localhost:3333`
+
+## Languages
+
+The portfolio supports English and Dutch:
+
+- English routes: `/`, `/projects`, `/projects/:slug`
+- Dutch routes: `/nl`, `/nl/projects`, `/nl/projects/:slug`
+
+Content documents have a `language` field. Dutch project and skill pages fall back to English content until Dutch documents are published in Sanity. Site-wide text, SEO, navigation labels, roles, about copy, social links, tech badges, and stats labels live in `siteSettings` documents for `en` and `nl`.
 
 ## 4. Run the Portfolio
 
@@ -50,7 +60,7 @@ Local portfolio URL: `http://127.0.0.1:3000`
 
 ## Seed Content
 
-The current local portfolio content has been seeded into Sanity. To run that again after editing `src/data`, use:
+The current local portfolio content and default English/Dutch site settings have been seeded into Sanity. To run that again after editing `src/data`, use:
 
 ```bash
 npm run sanity:seed
