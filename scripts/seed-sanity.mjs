@@ -62,7 +62,7 @@ const client = process.env.SANITY_AUTH_TOKEN
   ? createClient({ ...clientConfig, token: process.env.SANITY_AUTH_TOKEN })
   : getCliClient(clientConfig);
 
-const documentId = (type, slug) => `${type}.${slug.replace(/[^a-z0-9-]/gi, '-').toLowerCase()}`;
+const documentId = (type, slug) => `${type}-${slug.replace(/[^a-z0-9-]/gi, '-').toLowerCase()}`;
 
 function projectDocument(project) {
   return {
