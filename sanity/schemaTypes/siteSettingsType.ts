@@ -37,7 +37,13 @@ export const siteSettingsType = defineType({
         defineField({ name: 'name', title: 'Name', type: 'string', validation: (rule) => rule.required() }),
         defineField({ name: 'email', title: 'Email', type: 'string', validation: (rule) => rule.required().email() }),
         defineField({ name: 'cvPath', title: 'CV path', type: 'string' }),
-        defineField({ name: 'avatar', title: 'Avatar path', type: 'string' }),
+        defineField({ name: 'avatarImage', title: 'Avatar image', type: 'image', options: { hotspot: true } }),
+        defineField({
+          name: 'avatar',
+          title: 'Avatar fallback path',
+          type: 'string',
+          description: 'Used only if no Sanity avatar image is set.',
+        }),
         defineField({ name: 'tagline', title: 'Tagline', type: 'string' }),
       ],
     }),
@@ -150,10 +156,12 @@ export const siteSettingsType = defineType({
     select: {
       title: 'identity.name',
       subtitle: 'language',
+      media: 'identity.avatarImage',
     },
-    prepare: ({ title, subtitle }) => ({
+    prepare: ({ title, subtitle, media }) => ({
       title: title || 'Site settings',
       subtitle: subtitle === 'nl' ? 'Dutch' : 'English',
+      media,
     }),
   },
 });

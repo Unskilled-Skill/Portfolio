@@ -66,6 +66,8 @@ The current local portfolio content and default English/Dutch site settings have
 npm run sanity:seed
 ```
 
+The seed script uploads local images from `public/images` to Sanity image assets and connects them to the matching project hero, gallery, and avatar fields. Existing Sanity image assets are reused by filename, so rerunning the seed does not intentionally duplicate uploads.
+
 ## Notes
 
 This project uses React 19 and Sanity Studio 5. The Studio navigation is grouped into featured projects, all projects, coming soon projects, and skills. Vision is configured against the same API version and dataset as the portfolio.

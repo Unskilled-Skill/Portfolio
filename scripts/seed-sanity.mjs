@@ -1,6 +1,6 @@
 import { createRequire } from 'node:module';
-import { readFileSync } from 'node:fs';
-import { resolve } from 'node:path';
+import { createReadStream, existsSync, readFileSync } from 'node:fs';
+import { basename, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import sucrase from 'sucrase';
 import { createClient } from '@sanity/client';
@@ -63,8 +63,47 @@ const client = process.env.SANITY_AUTH_TOKEN
   : getCliClient(clientConfig);
 
 const documentId = (type, slug) => `${type}-${slug.replace(/[^a-z0-9-]/gi, '-').toLowerCase()}`;
+const uploadedImages = new Map();
 
-function projectDocument(project) {
+function localAssetPath(publicPath) {
+  if (!publicPath || !publicPath.startsWith('/')) {
+    return null;
+  }
+
+  const candidate = resolve(root, 'public', publicPath.slice(1));
+  return existsSync(candidate) ? candidate : null;
+}
+
+async function imageRef(publicPath) {
+  const filepath = localAssetPath(publicPath);
+  if (!filepath) {
+    return undefined;
+  }
+
+  if (uploadedImages.has(filepath)) {
+    return uploadedImages.get(filepath);
+  }
+
+  const filename = basename(filepath);
+  const existing = await client.fetch(
+    '*[_type == "sanity.imageAsset" && originalFilename == $filename][0]{_id}',
+    { filename },
+  );
+
+  const assetId = existing?._id || (await client.assets.upload('image', createReadStream(filepath), { filename }))._id;
+  const ref = {
+    _type: 'image',
+    asset: {
+      _type: 'reference',
+      _ref: assetId,
+    },
+  };
+
+  uploadedImages.set(filepath, ref);
+  return ref;
+}
+
+async function projectDocument(project) {
   return {
     _id: documentId('project', `en-${project.slug}`),
     _type: 'project',
@@ -75,16 +114,20 @@ function projectDocument(project) {
       current: project.slug,
     },
     subtitle: project.subtitle,
+    heroImage: await imageRef(project.heroImage),
     heroImageFallback: project.heroImage,
     youtubeId: project.youtubeId,
     overview: project.overview,
     meta: project.meta,
-    gallery: project.gallery.map((image, index) => ({
-      _key: `${project.slug}-gallery-${index}`,
-      src: image.src,
-      alt: image.alt,
-      overlay: image.overlay,
-    })),
+    gallery: await Promise.all(
+      project.gallery.map(async (image, index) => ({
+        _key: `${project.slug}-gallery-${index}`,
+        image: await imageRef(image.src),
+        src: image.src,
+        alt: image.alt,
+        overlay: image.overlay,
+      })),
+    ),
     highlights: project.highlights,
     bodySections: project.bodySections.map((section, index) => ({
       _key: `${project.slug}-body-${index}`,
@@ -112,12 +155,17 @@ function skillDocument(skill, index) {
   };
 }
 
-function siteSettingsDocument(settings) {
+async function siteSettingsDocument(settings) {
+  const avatarImage = await imageRef(settings.identity.avatar);
+
   return {
     _id: documentId('siteSettings', settings.locale),
     _type: 'siteSettings',
     language: settings.locale,
-    identity: settings.identity,
+    identity: {
+      ...settings.identity,
+      avatarImage,
+    },
     seo: settings.seo,
     roles: settings.roles,
     about: settings.about,
@@ -135,8 +183,8 @@ function siteSettingsDocument(settings) {
 }
 
 const docs = [
-  ...Object.values(fallbackSiteSettings).map(siteSettingsDocument),
-  ...projects.map(projectDocument),
+  ...(await Promise.all(Object.values(fallbackSiteSettings).map(siteSettingsDocument))),
+  ...(await Promise.all(projects.map(projectDocument))),
   ...skills.map(skillDocument),
 ];
 

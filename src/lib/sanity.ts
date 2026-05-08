@@ -99,7 +99,10 @@ const projectFields = `{
 
 const siteSettingsFields = `{
   language,
-  identity,
+  identity{
+    ...,
+    "avatar": coalesce(avatarImage.asset->url, avatar)
+  },
   seo,
   roles,
   about,
