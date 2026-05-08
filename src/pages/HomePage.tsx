@@ -9,7 +9,7 @@ import { ProjectSpotlight } from '../components/sections/ProjectSpotlight';
 import { SkillsSection } from '../components/sections/SkillsSection';
 import { ContactSection } from '../components/sections/ContactSection';
 import { StatsSection } from '../components/sections/StatsSection';
-import { projects } from '../data/projects';
+import { useProjects } from '../hooks/useSanityContent';
 import { seo, identity } from '../data/site';
 
 function Divider() {
@@ -22,6 +22,7 @@ function Divider() {
 
 export function HomePage() {
   const location = useLocation();
+  const { projects } = useProjects();
 
   useEffect(() => {
     const state = location.state as { scrollTo?: string } | null;

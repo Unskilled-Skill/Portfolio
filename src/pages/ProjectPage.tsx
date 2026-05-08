@@ -1,7 +1,7 @@
 import { useParams, Navigate, Link } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import { ArrowLeft, ArrowRight, CheckCircle } from 'lucide-react';
-import { getProjectBySlug, projects } from '../data/projects';
+import { useProjects } from '../hooks/useSanityContent';
 import { Breadcrumbs } from '../components/ui/Breadcrumbs';
 import { VideoEmbed } from '../components/ui/VideoEmbed';
 import { ProjectGrid } from '../components/ui/ProjectGrid';
@@ -10,7 +10,12 @@ import { FadeIn } from '../components/ui/FadeIn';
 
 export function ProjectPage() {
   const { slug } = useParams<{ slug: string }>();
-  const project = slug ? getProjectBySlug(slug) : undefined;
+  const { projects, loading } = useProjects();
+  const project = slug ? projects.find((p) => p.slug === slug) : undefined;
+
+  if (!project && loading) {
+    return null;
+  }
 
   if (!project) {
     return <Navigate to="/" replace />;

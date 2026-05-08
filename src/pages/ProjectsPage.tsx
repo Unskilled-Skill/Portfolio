@@ -1,10 +1,11 @@
 import { Link } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import { ArrowRight } from 'lucide-react';
-import { projects } from '../data/projects';
+import { useProjects } from '../hooks/useSanityContent';
 import { FadeIn } from '../components/ui/FadeIn';
 
 export function ProjectsPage() {
+  const { projects } = useProjects();
   const sorted = [...projects].sort((a, b) => a.navOrder - b.navOrder);
 
   return (

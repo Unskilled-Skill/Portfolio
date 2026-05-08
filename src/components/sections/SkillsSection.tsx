@@ -1,8 +1,10 @@
-import { skills } from '../../data/skills';
+import { useSkills } from '../../hooks/useSanityContent';
 import { SkillCard } from '../ui/SkillCard';
 import { FadeIn } from '../ui/FadeIn';
 
 export function SkillsSection() {
+  const { skills } = useSkills();
+
   return (
     <section id="skills" className="py-24 bg-surface/30">
       <div className="mx-auto max-w-7xl px-8 lg:px-16">

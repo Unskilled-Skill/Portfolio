@@ -1,0 +1,4 @@
+node_modules
+.env.local
+.sanity
+vite-dev.*.log
