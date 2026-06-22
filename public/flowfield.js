@@ -206,9 +206,9 @@
       for (var ci = collectibles.length - 1; ci >= 0; ci--) {
         var c = collectibles[ci];
         var cScreenY = c.y - sy;
-        if (cScreenY > h + 70) { collectibles.splice(ci, 1); continue; }
+        if (cScreenY > h + 70) { combo = 0; updateHud(); collectibles.splice(ci, 1); continue; } // missed → streak resets
         var age = (now - c.born) / 1000;
-        if (age > 16) { collectibles.splice(ci, 1); continue; }
+        if (age > 16) { combo = 0; updateHud(); collectibles.splice(ci, 1); continue; }
         var ca = field(c.x, c.y, t);
         c.x += Math.cos(ca) * 0.8;
         c.y += c.vy + 0.55;
