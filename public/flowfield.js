@@ -104,17 +104,12 @@
       ki = (k === seq[ki]) ? ki + 1 : (k === seq[0] ? 1 : 0);
       if (ki === seq.length) { ki = 0; setGame(!gameActive); }
     });
-    // secret: click the accent period after the name
-    var bindSecret = function () {
-      var secret = document.querySelector('[data-secret]');
-      if (secret && !secret.__rfBound) {
-        secret.__rfBound = true;
-        secret.style.cursor = 'default';
-        secret.addEventListener('click', function () { setGame(!gameActive); });
-      }
-    };
-    bindSecret();
-    setTimeout(bindSecret, 1500);
+    // secret: click the accent period after the name. Delegated on document so
+    // it survives SplitText rebuilding the headline (which replaces the span).
+    document.addEventListener('click', function (e) {
+      var el = e.target;
+      if (el && el.closest && el.closest('[data-secret]')) setGame(!gameActive);
+    });
 
     var t = 0;
     function loop() {
@@ -221,15 +216,36 @@
         ctx.fillStyle = 'rgba(' + fillC + ',' + (0.95 * fade).toFixed(3) + ')';
         ctx.fillRect(-c.s / 2, -c.s / 2, c.s, c.s); ctx.restore();
       }
-      // catch bursts
+      // catch bursts — dotted rings that expand like a shockwave while spinning
+      // with an accelerating ramp (rotation ∝ age², so it keeps speeding up).
+      var POP_DUR = 0.85;
       for (var pi = pops.length - 1; pi >= 0; pi--) {
         var pp = pops[pi];
         var pAge = (now - pp.born) / 1000;
-        if (pAge > 0.45) { pops.splice(pi, 1); continue; }
-        ctx.strokeStyle = 'rgba(' + (pp.golden ? '255,196,84' : '228,76,101') + ',' + (1 - pAge / 0.45).toFixed(3) + ')';
-        ctx.lineWidth = 2;
-        ctx.beginPath(); ctx.arc(pp.x, pp.y - sy, 10 + pAge * 70, 0, Math.PI * 2); ctx.stroke();
+        if (pAge > POP_DUR) { pops.splice(pi, 1); continue; }
+        var prog = pAge / POP_DUR;
+        var alpha = (1 - prog) * (1 - prog); // ease-out fade
+        var ringColor = pp.golden ? '255,196,84' : '228,76,101';
+        var rot = pAge * pAge * 11; // ramps up — faster the longer it lives
+        var radius = 8 + prog * 96;  // expanding pulse
+        ctx.save();
+        ctx.translate(pp.x, pp.y - sy);
+        // outer dotted ring
+        ctx.rotate(rot);
+        ctx.setLineDash([2, 7]);
+        ctx.lineCap = 'round';
+        ctx.lineWidth = 1.6;
+        ctx.strokeStyle = 'rgba(' + ringColor + ',' + (alpha * 0.9).toFixed(3) + ')';
+        ctx.beginPath(); ctx.arc(0, 0, radius, 0, Math.PI * 2); ctx.stroke();
+        // inner dotted ring — finer dashes, counter-spin for contrast
+        ctx.rotate(-rot * 1.8);
+        ctx.setLineDash([1.5, 10]);
+        ctx.lineWidth = 1.2;
+        ctx.strokeStyle = 'rgba(' + ringColor + ',' + (alpha * 0.6).toFixed(3) + ')';
+        ctx.beginPath(); ctx.arc(0, 0, radius * 0.58, 0, Math.PI * 2); ctx.stroke();
+        ctx.restore();
       }
+      ctx.setLineDash([]);
       // sparks
       for (var spi = sparks.length - 1; spi >= 0; spi--) {
         var spk = sparks[spi];
