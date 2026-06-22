@@ -51,7 +51,7 @@ export function HeroSection() {
                 {firstName}
                 <br />
                 {lastName}
-                <span className="text-rf-accent">.</span>
+                <span data-secret className="text-rf-accent">.</span>
               </h1>
             </div>
 
