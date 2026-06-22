@@ -117,7 +117,7 @@
       var sy = window.scrollY || window.pageYOffset || 0;
       ctx.clearRect(0, 0, w, h);
       var now = performance.now();
-      if (shocks.length) shocks = shocks.filter(function (s) { return now - s.born < 950; });
+      if (shocks.length) shocks = shocks.filter(function (s) { return now - s.born < 620; });
 
       for (var i = 0; i < particles.length; i++) {
         var p = particles[i];
@@ -138,15 +138,15 @@
           var sdx = p.x - sk.x, sdy = p.y - sk.y;
           var sd = Math.sqrt(sdx * sdx + sdy * sdy) || 1;
           var sAge = (now - sk.born) / 1000;
-          var ringDist = Math.abs(sd - sAge * 520);
-          if (ringDist < 90) {
-            var sf = (1 - ringDist / 90) * (1 - sAge / 0.95);
+          var ringDist = Math.abs(sd - sAge * 300);
+          if (ringDist < 55) {
+            var sf = (1 - ringDist / 55) * (1 - sAge / 0.62);
             if (sf > 0) {
               var dirn = sk.golden ? -1 : 1;
               // radial outward shove
-              vx += (sdx / sd) * sf * 4.5; vy += (sdy / sd) * sf * 4.5;
+              vx += (sdx / sd) * sf * 3; vy += (sdy / sd) * sf * 3;
               // tangential swirl → spins the field into a vortex around the blast
-              vx += (-sdy / sd) * sf * 7.5 * dirn; vy += (sdx / sd) * sf * 7.5 * dirn;
+              vx += (-sdy / sd) * sf * 5 * dirn; vy += (sdx / sd) * sf * 5 * dirn;
               p.heat = Math.min(1, p.heat + sf * 0.7);
               p.ember = Math.min(1, (p.ember || 0) + sf * 1.1);
               if (sf > 0.34) p.dying = true;
@@ -180,7 +180,7 @@
           }
           // additive ember halo — bright burning glow that fades as it cools
           if (em > 0.12) {
-            var gr = (3 + em * 7) * 2.4;
+            var gr = (2 + em * 5) * 1.9;
             ctx.save();
             ctx.globalCompositeOperation = 'lighter';
             var grd = ctx.createRadialGradient(p.x, screenY, 0, p.x, screenY, gr);
@@ -243,7 +243,7 @@
       }
       // catch bursts — dotted rings that expand like a shockwave while spinning
       // with an accelerating ramp (rotation ∝ age², so it keeps speeding up).
-      var POP_DUR = 0.85;
+      var POP_DUR = 0.68;
       for (var pi = pops.length - 1; pi >= 0; pi--) {
         var pp = pops[pi];
         var pAge = (now - pp.born) / 1000;
@@ -252,7 +252,7 @@
         var alpha = (1 - prog) * (1 - prog); // ease-out fade
         var ringColor = pp.golden ? '255,196,84' : '228,76,101';
         var rot = pAge * pAge * 11; // ramps up — faster the longer it lives
-        var radius = 8 + prog * 96;  // expanding pulse
+        var radius = 6 + prog * 52;  // expanding pulse
         ctx.save();
         ctx.translate(pp.x, pp.y - sy);
         // outer dotted ring
