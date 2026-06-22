@@ -129,19 +129,28 @@
           if (d < 170) { var f = (1 - d / 170); vx += (-dy / (d || 1)) * f * 2.4; vy += (dx / (d || 1)) * f * 2.4; p.heat = Math.min(1, p.heat + f * 0.08); }
         }
         p.heat *= 0.96;
+        if (p.ember) p.ember *= 0.93; // embers burn off and cool
 
-        // shockwaves from catches shove + flare nearby particles
+        // catch explosions: nearby particles get caught in a vortex and burn off
+        // as bright embers — radial shockwave + tangential swirl + ember glow.
         for (var si = 0; si < shocks.length; si++) {
           var sk = shocks[si];
           var sdx = p.x - sk.x, sdy = p.y - sk.y;
           var sd = Math.sqrt(sdx * sdx + sdy * sdy) || 1;
           var sAge = (now - sk.born) / 1000;
           var ringDist = Math.abs(sd - sAge * 520);
-          if (ringDist < 70) {
-            var sf = (1 - ringDist / 70) * (1 - sAge / 0.95);
-            vx += (sdx / sd) * sf * 7; vy += (sdy / sd) * sf * 7;
-            p.heat = Math.min(1, p.heat + sf * 0.6);
-            if (sf > 0.32) p.dying = true;
+          if (ringDist < 90) {
+            var sf = (1 - ringDist / 90) * (1 - sAge / 0.95);
+            if (sf > 0) {
+              var dirn = sk.golden ? -1 : 1;
+              // radial outward shove
+              vx += (sdx / sd) * sf * 4.5; vy += (sdy / sd) * sf * 4.5;
+              // tangential swirl → spins the field into a vortex around the blast
+              vx += (-sdy / sd) * sf * 7.5 * dirn; vy += (sdx / sd) * sf * 7.5 * dirn;
+              p.heat = Math.min(1, p.heat + sf * 0.7);
+              p.ember = Math.min(1, (p.ember || 0) + sf * 1.1);
+              if (sf > 0.34) p.dying = true;
+            }
           }
         }
 
@@ -150,23 +159,39 @@
         p.trail.push(p.x, p.y); if (p.trail.length > 16) p.trail.splice(0, p.trail.length - 16);
 
         var lit = p.heat;
+        var em = p.ember || 0;
+        var hot = Math.max(lit, em);
         var ff = p.dying ? Math.max(0, p.fade) : 1;
         if (ff > 0 && screenY > -40 && screenY < h + 40) {
-          var rr = lit > 0.04 ? Math.round(243 + (228 - 243) * lit) : 243;
-          var gg = lit > 0.04 ? Math.round(242 + (76 - 242) * lit) : 242;
-          var bb = lit > 0.04 ? Math.round(239 + (101 - 239) * lit) : 239;
-          var headA = (baseAlpha + lit * 0.5) * ff, pn = p.trail.length / 2;
+          // ink → pink (cursor heat) → bright ember (burn-off glow)
+          var rr = 243 + (228 - 243) * lit; rr += (255 - rr) * em;
+          var gg = 242 + (76 - 242) * lit; gg += (205 - gg) * em;
+          var bb = 239 + (101 - 239) * lit; bb += (130 - bb) * em;
+          rr = Math.round(rr); gg = Math.round(gg); bb = Math.round(bb);
+          var headA = (baseAlpha + hot * 0.55) * ff, pn = p.trail.length / 2;
           ctx.lineCap = 'round';
           for (var k = 1; k < pn; k++) {
             ctx.strokeStyle = 'rgba(' + rr + ',' + gg + ',' + bb + ',' + ((k / pn) * headA * 0.55).toFixed(3) + ')';
-            ctx.lineWidth = 0.5 + (k / pn) * (0.7 + lit * 1.1);
+            ctx.lineWidth = 0.5 + (k / pn) * (0.7 + hot * 1.1);
             ctx.beginPath();
             ctx.moveTo(p.trail[(k - 1) * 2], p.trail[(k - 1) * 2 + 1] - sy);
             ctx.lineTo(p.trail[k * 2], p.trail[k * 2 + 1] - sy);
             ctx.stroke();
           }
+          // additive ember halo — bright burning glow that fades as it cools
+          if (em > 0.12) {
+            var gr = (3 + em * 7) * 2.4;
+            ctx.save();
+            ctx.globalCompositeOperation = 'lighter';
+            var grd = ctx.createRadialGradient(p.x, screenY, 0, p.x, screenY, gr);
+            grd.addColorStop(0, 'rgba(' + rr + ',' + gg + ',' + bb + ',' + (0.55 * em * ff).toFixed(3) + ')');
+            grd.addColorStop(1, 'rgba(' + rr + ',' + gg + ',' + bb + ',0)');
+            ctx.fillStyle = grd;
+            ctx.beginPath(); ctx.arc(p.x, screenY, gr, 0, Math.PI * 2); ctx.fill();
+            ctx.restore();
+          }
           ctx.fillStyle = 'rgba(' + rr + ',' + gg + ',' + bb + ',' + headA.toFixed(3) + ')';
-          ctx.beginPath(); ctx.arc(p.x, screenY, 1.3 + lit * 1.7, 0, Math.PI * 2); ctx.fill();
+          ctx.beginPath(); ctx.arc(p.x, screenY, 1.3 + hot * 1.7 + em * 1.6, 0, Math.PI * 2); ctx.fill();
         }
         if (p.x < -20 || p.x > w + 20 || p.y < -20 || p.y > pageH + 20 || p.life <= 0 || (p.dying && p.fade <= 0)) { particles[i] = make(); }
       }
@@ -196,7 +221,7 @@
             gameScore += (c.golden ? 3 : 1) * combo;
             spawnGap = Math.max(520, spawnGap - 45);
             pops.push({ x: c.x, y: c.y, born: now, golden: c.golden });
-            shocks.push({ x: c.x, y: c.y, born: now });
+            shocks.push({ x: c.x, y: c.y, born: now, golden: c.golden });
             var col = c.golden ? '255,196,84' : '255,95,120';
             for (var s = 0; s < 12; s++) { var an = Math.random() * 6.28, spd = 1.2 + Math.random() * 3.4; sparks.push({ x: c.x, y: c.y, vx: Math.cos(an) * spd, vy: Math.sin(an) * spd, born: now, col: col }); }
             collectibles.splice(ci, 1);
