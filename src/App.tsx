@@ -1,10 +1,9 @@
-import { lazy, Suspense, useState } from 'react';
+import { lazy, Suspense } from 'react';
 import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom';
 import { HelmetProvider } from 'react-helmet-async';
 import { AnimatePresence, motion } from 'framer-motion';
 import { Layout } from './components/layout/Layout';
 import { HomePage } from './pages/HomePage';
-import { Preloader } from './components/ui/Preloader';
 
 const ProjectPage  = lazy(() => import('./pages/ProjectPage'));
 const ProjectsPage = lazy(() => import('./pages/ProjectsPage'));
@@ -45,11 +44,8 @@ function AnimatedRoutes() {
 }
 
 export function App() {
-  const [preloaderDone, setPreloaderDone] = useState(false);
-
   return (
     <HelmetProvider>
-      {!preloaderDone && <Preloader onDone={() => setPreloaderDone(true)} />}
       <BrowserRouter>
         <Layout>
           <AnimatedRoutes />

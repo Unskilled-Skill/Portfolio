@@ -7,49 +7,51 @@ import { useLocale } from '../../hooks/useLocale';
 import { useSiteSettings } from '../../hooks/useSanityContent';
 import { localizedPath, withLocale } from '../../lib/locale';
 
-const NAV_SECTIONS = ['projects', 'skills', 'contact'];
+const NAV_SECTIONS = ['projects', 'about', 'skills', 'contact'];
 
 export function Header() {
   const [menuOpen, setMenuOpen] = useState(false);
-  const [scrolled, setScrolled] = useState(false);
+  const [progress, setProgress] = useState(0);
   const location = useLocation();
   const { locale } = useLocale();
   const { settings } = useSiteSettings(locale);
   const { identity, ui } = settings;
   const { scrollTo, scrollToTop } = useSmoothScroll();
-  const isProjectPage   = location.pathname.startsWith('/projects/') || location.pathname.startsWith('/nl/projects/');
-  const isProjectsList  = location.pathname === '/projects' || location.pathname === '/nl/projects';
-  const activeSection   = useScrollSpy(NAV_SECTIONS, 120);
+  const isProjectPage = location.pathname.startsWith('/projects/') || location.pathname.startsWith('/nl/projects/');
+  const activeSection = useScrollSpy(NAV_SECTIONS, 120);
 
   useEffect(() => {
-    const handleScroll = () => setScrolled(window.scrollY > 20);
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    return () => window.removeEventListener('scroll', handleScroll);
+    const onScroll = () => {
+      const de = document.documentElement;
+      const max = de.scrollHeight - de.clientHeight || 1;
+      setProgress(Math.min(Math.max(window.scrollY / max, 0), 1) * 100);
+    };
+    onScroll();
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => window.removeEventListener('scroll', onScroll);
   }, []);
 
-  useEffect(() => {
-    setMenuOpen(false);
-  }, [location]);
+  useEffect(() => { setMenuOpen(false); }, [location]);
 
-  const navAction = (id: string) => {
-    setMenuOpen(false);
-    scrollTo(id);
-  };
+  const aboutLabel = locale === 'nl' ? 'Over' : 'About';
 
-  const navLinkClass = (active: boolean) =>
-    `text-sm font-light transition-colors duration-200 relative after:absolute after:bottom-[-4px] after:left-0 after:h-px after:bg-accent after:transition-all after:duration-300 ${
-      active
-        ? 'text-white after:w-full'
-        : 'text-white/60 hover:text-white after:w-0 hover:after:w-full'
-    }`;
+  const navLinks = [
+    { id: 'projects', index: '01', label: ui.work },
+    { id: 'about', index: '02', label: aboutLabel },
+    { id: 'skills', index: '03', label: ui.expertise },
+  ];
+
+  const monoLink =
+    'font-mono text-xs uppercase tracking-[0.1em] text-rf-ink/60 transition-colors hover:text-rf-ink whitespace-nowrap';
 
   return (
-    <header
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-        scrolled ? 'glass shadow-lg shadow-black/20' : 'bg-transparent'
-      }`}
-    >
-      <div className="mx-auto flex max-w-7xl items-center justify-between px-8 py-4 lg:px-16">
+    <header className="fixed inset-x-0 top-0 z-[60] border-b border-white/[0.08] bg-rf-bg/[0.86] backdrop-blur-md">
+      {/* scroll progress */}
+      <div className="absolute inset-x-0 top-0 h-[3px]">
+        <div className="h-full bg-rf-accent transition-[width] duration-100 ease-linear" style={{ width: `${progress}%` }} />
+      </div>
+
+      <div className="mx-auto flex max-w-shell items-center justify-between gap-6 px-[clamp(20px,5vw,72px)] py-4">
         <Link
           to={withLocale('/', locale)}
           onClick={(e) => {
@@ -58,43 +60,41 @@ export function Header() {
               scrollToTop();
             }
           }}
-          className="text-lg font-light tracking-wide text-white transition-colors hover:text-accent"
+          className="flex items-center gap-3"
         >
-          {identity.name}
+          <span className="flex h-[34px] w-[34px] items-center justify-center bg-rf-accent font-display text-base font-extrabold tracking-[-0.04em] text-rf-bg">
+            RF
+          </span>
+          <span className="font-display text-base font-semibold tracking-[-0.01em] text-rf-ink">{identity.name}</span>
         </Link>
 
         {isProjectPage ? (
-          <Link
-            to={withLocale('/', locale)}
-            className="flex items-center gap-2 text-sm font-light text-white/70 transition-colors hover:text-accent"
-          >
-            <ArrowLeft size={16} />
+          <Link to={withLocale('/', locale)} className="flex items-center gap-2 font-mono text-xs uppercase tracking-[0.1em] text-rf-ink/70 transition-colors hover:text-rf-accent">
+            <ArrowLeft size={15} />
             {ui.back}
           </Link>
         ) : (
           <>
-            <nav className="hidden items-center gap-8 md:flex">
+            <nav className="hidden items-center gap-[clamp(14px,2.2vw,30px)] min-[760px]:flex">
+              {navLinks.map((l) => (
+                <button
+                  key={l.id}
+                  onClick={() => scrollTo(l.id)}
+                  className={`rf-navlink ${monoLink}`}
+                  data-active={activeSection === l.id}
+                >
+                  <span className="text-rf-accent">{l.index}</span> {l.label}
+                </button>
+              ))}
               <button
-                onClick={() => scrollToTop()}
-                className={navLinkClass(!activeSection)}
+                onClick={() => scrollTo('contact')}
+                className="inline-flex items-center gap-2 bg-rf-ink px-4 py-[9px] font-mono text-xs uppercase tracking-[0.1em] text-rf-bg transition-colors hover:bg-rf-accent hover:text-white"
               >
-                {ui.home}
-              </button>
-              <Link
-                to={withLocale('/projects', locale)}
-                className={navLinkClass(isProjectsList || activeSection === 'projects' || activeSection === 'skills')}
-              >
-                {ui.projects}
-              </Link>
-              <button
-                onClick={() => navAction('contact')}
-                className={navLinkClass(activeSection === 'contact')}
-              >
-                {ui.contact}
+                {ui.contact} →
               </button>
               <Link
                 to={localizedPath(location.pathname, locale === 'en' ? 'nl' : 'en')}
-                className="rounded-full border border-white/10 px-3 py-1 text-xs font-light uppercase tracking-[0.16em] text-white/50 transition-colors hover:border-accent hover:text-accent"
+                className="border border-white/10 px-2.5 py-1 font-mono text-[11px] uppercase tracking-[0.16em] text-rf-ink/50 transition-colors hover:border-rf-accent hover:text-rf-accent"
               >
                 {locale === 'en' ? 'NL' : 'EN'}
               </Link>
@@ -102,7 +102,7 @@ export function Header() {
 
             <button
               onClick={() => setMenuOpen(!menuOpen)}
-              className="rounded-lg p-2 text-white/70 transition-colors hover:bg-white/5 hover:text-white md:hidden"
+              className="p-2 text-rf-ink/70 transition-colors hover:text-rf-ink min-[760px]:hidden"
               aria-label="Toggle menu"
               aria-expanded={menuOpen}
             >
@@ -113,29 +113,26 @@ export function Header() {
       </div>
 
       {menuOpen && !isProjectPage && (
-        <nav className="glass border-t border-white/5 md:hidden">
-          <div className="flex flex-col gap-4 px-8 py-4">
+        <nav className="border-t border-white/[0.08] bg-rf-bg/95 backdrop-blur-md min-[760px]:hidden">
+          <div className="flex flex-col gap-4 px-[clamp(20px,5vw,72px)] py-5">
+            {navLinks.map((l) => (
+              <button
+                key={l.id}
+                onClick={() => { setMenuOpen(false); scrollTo(l.id); }}
+                className="text-left font-mono text-xs uppercase tracking-[0.1em] text-rf-ink/70 transition-colors hover:text-rf-ink"
+              >
+                <span className="text-rf-accent">{l.index}</span> {l.label}
+              </button>
+            ))}
             <button
-              onClick={() => { setMenuOpen(false); scrollToTop(); }}
-              className={`text-left text-sm font-light transition-colors ${!activeSection ? 'text-white' : 'text-white/70 hover:text-white'}`}
+              onClick={() => { setMenuOpen(false); scrollTo('contact'); }}
+              className="text-left font-mono text-xs uppercase tracking-[0.1em] text-rf-accent"
             >
-              {ui.home}
-            </button>
-            <Link
-              to={withLocale('/projects', locale)}
-              className={`text-left text-sm font-light transition-colors ${isProjectsList || activeSection === 'projects' || activeSection === 'skills' ? 'text-accent' : 'text-white/70 hover:text-white'}`}
-            >
-              {ui.projects}
-            </Link>
-            <button
-              onClick={() => navAction('contact')}
-              className={`text-left text-sm font-light transition-colors ${activeSection === 'contact' ? 'text-accent' : 'text-white/70 hover:text-white'}`}
-            >
-              {ui.contact}
+              {ui.contact} →
             </button>
             <Link
               to={localizedPath(location.pathname, locale === 'en' ? 'nl' : 'en')}
-              className="text-left text-sm font-light text-white/70 transition-colors hover:text-accent"
+              className="text-left font-mono text-xs uppercase tracking-[0.1em] text-rf-ink/70 transition-colors hover:text-rf-accent"
             >
               {locale === 'en' ? ui.languageDutch : ui.languageEnglish}
             </Link>

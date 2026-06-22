@@ -1,16 +1,6 @@
 import { useState } from 'react';
-import type { LucideIcon } from 'lucide-react';
-import { BriefcaseBusiness, CodeXml, Palette, Mail, Copy, Check, Download } from 'lucide-react';
-import { FadeIn } from '../ui/FadeIn';
 import { useLocale } from '../../hooks/useLocale';
 import { useSiteSettings } from '../../hooks/useSanityContent';
-
-const iconMap: Record<string, LucideIcon> = {
-  Github: CodeXml,
-  Linkedin: BriefcaseBusiness,
-  Palette,
-  Mail,
-};
 
 export function ContactSection() {
   const [copied, setCopied] = useState(false);
@@ -18,75 +8,75 @@ export function ContactSection() {
   const { settings } = useSiteSettings(locale);
   const { identity, socialLinks, ui } = settings;
 
+  const externals = socialLinks.filter((l) => !l.url.startsWith('mailto:'));
+
   const copyEmail = async () => {
     try {
       await navigator.clipboard.writeText(identity.email);
       setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
+      setTimeout(() => setCopied(false), 1800);
     } catch {
       window.location.href = `mailto:${identity.email}`;
     }
   };
 
   return (
-    <section id="contact" className="relative py-24">
-      <div className="absolute inset-0 bg-gradient-to-b from-bg to-surface/50" />
+    <section
+      id="contact"
+      className="relative border-t border-white/[0.08] bg-rf-bg/[0.42] px-[clamp(20px,5vw,72px)] py-[clamp(80px,14vh,160px)]"
+    >
+      <div className="relative z-[1] mx-auto max-w-shell">
+        <div data-reveal>
+          <span className="font-mono text-xs uppercase tracking-[0.14em] text-rf-accent">(04) {ui.contact}</span>
+          <h2
+            data-kinetic="settle"
+            className="mt-[18px] max-w-[16ch] font-display text-[clamp(42px,7vw,104px)] font-extrabold leading-[0.94] tracking-[-0.035em]"
+          >
+            {ui.contactHeadline}
+            <span className="text-rf-accent">.</span>
+          </h2>
+        </div>
 
-      <div className="relative z-10 mx-auto max-w-3xl px-6 text-center">
-        <FadeIn direction="up">
-          <div className="mb-12">
-            <p className="mb-2 text-sm font-light uppercase tracking-[0.2em] text-accent">
-              {ui.contact}
-            </p>
-            <h2 className="mb-4 text-3xl font-thin tracking-tight md:text-4xl">
-              {ui.contact}
-            </h2>
-            <p className="mx-auto max-w-md font-light text-white/55">
-              {identity.tagline}
-            </p>
+        <div data-reveal className="mt-[clamp(40px,6vh,72px)] flex flex-wrap items-end justify-between gap-8">
+          <div>
+            <div className="mb-3 font-mono text-xs uppercase tracking-[0.14em] text-rf-ink/[0.34]">{ui.emailLabel}</div>
+            <a
+              href={`mailto:${identity.email}`}
+              className="border-b-2 border-rf-accent/50 pb-1.5 font-display text-[clamp(22px,3vw,40px)] font-semibold tracking-[-0.02em] text-rf-ink transition-colors hover:border-rf-accent"
+            >
+              {identity.email}
+            </a>
           </div>
-        </FadeIn>
-
-        <FadeIn direction="up" delay={150}>
-          <div className="flex flex-col items-center gap-4 sm:flex-row sm:justify-center">
+          <div className="flex flex-wrap gap-3">
             <button
               onClick={copyEmail}
-              className="inline-flex items-center gap-2 rounded-lg bg-accent px-8 py-4 text-lg font-light text-white shadow-lg shadow-accent/20 transition-all duration-300 hover:bg-accent-dark hover:shadow-accent/40"
+              className="inline-flex items-center gap-2.5 bg-rf-accent px-[26px] py-[15px] font-mono text-[13px] uppercase tracking-[0.08em] text-white transition-colors hover:bg-rf-accentHover"
             >
-              {copied ? <Check size={18} /> : <Copy size={18} />}
               {copied ? ui.copied : ui.copyEmail}
             </button>
             <a
               href={identity.cvPath}
               download
-              className="inline-flex items-center gap-2 rounded-lg border border-white/10 px-8 py-4 text-lg font-light text-white/70 transition-all duration-300 hover:border-accent/50 hover:text-white"
+              className="inline-flex items-center gap-2.5 border border-white/[0.16] px-[26px] py-[15px] font-mono text-[13px] uppercase tracking-[0.08em] text-rf-ink/[0.85] transition-colors hover:border-rf-accent hover:text-white"
             >
-              <Download size={18} />
-              {ui.downloadCv}
+              {ui.downloadCv} ↓
             </a>
           </div>
-          <p className="mt-4 text-sm font-light text-white/30">{identity.email}</p>
-        </FadeIn>
+        </div>
 
-        <FadeIn direction="up" delay={250}>
-          <div className="mt-10 flex items-center justify-center gap-5">
-            {socialLinks.map((link) => {
-              const Icon = iconMap[link.icon];
-              return (
-                <a
-                  key={link.label}
-                  href={link.url}
-                  target={link.url.startsWith('mailto:') ? undefined : '_blank'}
-                  rel={link.url.startsWith('mailto:') ? undefined : 'noopener noreferrer'}
-                  aria-label={link.label}
-                  className="flex h-12 w-12 items-center justify-center rounded-full border border-white/10 text-white/50 transition-all duration-300 hover:border-accent hover:bg-accent/10 hover:text-accent hover:scale-110"
-                >
-                  {Icon && <Icon size={20} />}
-                </a>
-              );
-            })}
-          </div>
-        </FadeIn>
+        <div data-reveal className="mt-[clamp(48px,7vh,80px)] flex flex-wrap gap-[clamp(20px,4vw,56px)] border-t border-white/[0.08] pt-8">
+          {externals.map((link) => (
+            <a
+              key={link.label}
+              href={link.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="font-mono text-[13px] uppercase tracking-[0.08em] text-rf-ink/[0.6] transition-colors hover:text-rf-accent"
+            >
+              {link.label} ↗
+            </a>
+          ))}
+        </div>
       </div>
     </section>
   );

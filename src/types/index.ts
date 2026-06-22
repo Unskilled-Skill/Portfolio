@@ -124,6 +124,32 @@ export interface SiteUiText {
   viewProjects: string;
   whoIAm: string;
   work: string;
+  // Redesign — editable display copy
+  available: string;
+  heroLocation: string;
+  metaRole: string;
+  metaStudying: string;
+  metaFocus: string;
+  workTitle: string;
+  aboutLabel: string;
+  aboutTitle: string;
+  whatIDo: string;
+  contactHeadline: string;
+  emailLabel: string;
+  footerNote: string;
+  backToTop: string;
+  selectedWork: string;
+  projectsTagline: string;
+  location: string;
+  moreProjects: string;
+  workWithMe: string;
+  processHeadline: string;
+  galleryLabel: string;
+  galleryHeadline: string;
+  frames: string;
+  allWork: string;
+  nextProject: string;
+  prevProject: string;
 }
 
 export interface SiteSettings {

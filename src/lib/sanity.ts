@@ -162,7 +162,10 @@ export async function fetchSkills(locale: Locale): Promise<Skill[]> {
 }
 
 export async function fetchSiteSettings(locale: Locale): Promise<SiteSettings | null> {
-  const query = `*[_type == "siteSettings" && language in ["${locale}", "en"]] | order(language == "${locale}" desc)[0] ${siteSettingsFields}`;
+  // Prefer the requested locale, fall back to English. Ordering by a boolean
+  // expression is not valid GROQ (`order(... desc)` → parse error), so map the
+  // match to a sort key with select().
+  const query = `*[_type == "siteSettings" && language in ["${locale}", "en"]] | order(select(language == "${locale}" => 0, 1) asc)[0] ${siteSettingsFields}`;
   return sanityFetch<SiteSettings | null>(query);
 }
 
@@ -213,7 +216,20 @@ export async function getSiteSettings(locale: Locale = 'en'): Promise<SiteSettin
 
   try {
     const settings = await fetchSiteSettings(locale);
-    return settings ? { ...fallback, ...settings, locale } : fallback;
+    if (!settings) {
+      return fallback;
+    }
+    // Deep-merge nested objects so any field not yet set in Sanity keeps its
+    // fallback value (e.g. newly added ui copy on existing documents).
+    return {
+      ...fallback,
+      ...settings,
+      locale,
+      identity: { ...fallback.identity, ...settings.identity },
+      seo: { ...fallback.seo, ...settings.seo },
+      about: { ...fallback.about, ...settings.about },
+      ui: { ...fallback.ui, ...settings.ui },
+    };
   } catch (error) {
     console.warn(error);
     return fallback;

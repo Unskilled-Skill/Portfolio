@@ -1,10 +1,8 @@
 import { Link } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
-import { ArrowRight } from 'lucide-react';
 import { useProjects, useSiteSettings } from '../hooks/useSanityContent';
 import { useLocale } from '../hooks/useLocale';
 import { withLocale } from '../lib/locale';
-import { FadeIn } from '../components/ui/FadeIn';
 
 export function ProjectsPage() {
   const { locale } = useLocale();
@@ -12,117 +10,98 @@ export function ProjectsPage() {
   const { settings } = useSiteSettings(locale);
   const { seo, ui } = settings;
   const sorted = [...projects].sort((a, b) => a.navOrder - b.navOrder);
+  const year = new Date().getFullYear();
 
   return (
     <>
       <Helmet>
-        <title>{ui.projects} - Rochee Faverey</title>
+        <title>{ui.projects} — Rochee Faverey</title>
         <meta name="description" content={seo.description} />
       </Helmet>
 
-      <section className="relative min-h-screen pt-32 pb-24">
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_rgba(228,76,101,0.06)_0%,_transparent_60%)]" />
-
-        <div className="relative mx-auto max-w-6xl px-8 lg:px-16">
-          <FadeIn direction="down" threshold={0}>
-            <div className="mb-16 text-center">
-              <p className="mb-2 text-sm font-light uppercase tracking-[0.2em] text-accent">
-                {ui.work}
-              </p>
-              <h1 className="font-display text-4xl font-bold tracking-tight md:text-5xl">
-                {ui.projects}
-              </h1>
-            </div>
-          </FadeIn>
-
-          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {sorted.map((project, i) => {
-              const isComingSoon = project.title === 'Coming Soon';
-              return (
-                <FadeIn key={project.slug} direction="up" delay={i * 80} threshold={0.05}>
-                  {isComingSoon ? (
-                    <div className="group relative flex h-full flex-col overflow-hidden rounded-2xl border border-white/5 bg-surface/20 opacity-50 cursor-default select-none">
-                      <div className="relative aspect-[16/9] overflow-hidden">
-                        <img
-                          src={project.heroImage}
-                          alt={project.title}
-                          loading="lazy"
-                          className="h-full w-full object-cover grayscale"
-                        />
-                        <div className="absolute inset-0 bg-gradient-to-t from-surface via-transparent to-transparent" />
-                        <span className="absolute right-3 top-3 rounded-full border border-white/10 bg-white/5 px-2.5 py-0.5 text-xs font-light text-white/50">
-                          {project.title}
-                        </span>
-                      </div>
-                      <div className="flex flex-1 flex-col gap-3 p-5">
-                        <div>
-                          <p className="mb-1 text-xs font-light uppercase tracking-[0.18em] text-white/25">
-                            {project.subtitle}
-                          </p>
-                          <h2 className="font-display text-xl font-bold text-white/30">
-                            {project.title}
-                          </h2>
-                        </div>
-                        <p className="flex-1 text-sm font-light text-white/20 line-clamp-3">
-                          {project.overview}
-                        </p>
-                      </div>
-                    </div>
-                  ) : (
-                    <Link
-                      to={withLocale(`/projects/${project.slug}`, locale)}
-                      className="group relative flex h-full flex-col overflow-hidden rounded-2xl border border-white/5 bg-surface/40 transition-all duration-300 hover:border-accent/25 hover:bg-surface/70 hover:shadow-xl hover:shadow-accent/8 hover:-translate-y-1"
-                    >
-                      <div className="relative aspect-[16/9] overflow-hidden">
-                        <img
-                          src={project.heroImage}
-                          alt={project.title}
-                          loading="lazy"
-                          className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
-                        />
-                        <div className="absolute inset-0 bg-gradient-to-t from-surface via-transparent to-transparent" />
-                        {project.featured && (
-                          <span className="absolute right-3 top-3 rounded-full bg-accent/90 px-2.5 py-0.5 text-xs font-light text-white">
-                            {ui.featured}
-                          </span>
-                        )}
-                      </div>
-
-                      <div className="flex flex-1 flex-col gap-3 p-5">
-                        <div>
-                          <p className="mb-1 text-xs font-light uppercase tracking-[0.18em] text-accent">
-                            {project.subtitle}
-                          </p>
-                          <h2 className="font-display text-xl font-bold text-white">
-                            {project.title}
-                          </h2>
-                        </div>
-
-                        <p className="flex-1 text-sm font-light leading-relaxed text-white/55 line-clamp-3">
-                          {project.overview}
-                        </p>
-
-                        <div className="flex flex-wrap gap-1.5">
-                          {project.highlights.slice(0, 2).map((tag) => (
-                            <span
-                              key={tag}
-                              className="rounded-full border border-white/8 bg-white/4 px-2.5 py-0.5 text-xs font-light text-white/50"
-                            >
-                              {tag}
-                            </span>
-                          ))}
-                        </div>
-
-                        <div className="flex items-center gap-1.5 text-sm font-light text-accent opacity-0 transition-all duration-300 group-hover:opacity-100 group-hover:gap-2.5">
-                          {ui.viewProject} <ArrowRight size={14} />
-                        </div>
-                      </div>
-                    </Link>
-                  )}
-                </FadeIn>
-              );
-            })}
+      {/* header */}
+      <section className="px-[clamp(20px,5vw,72px)] pb-[clamp(40px,6vh,72px)] pt-[clamp(120px,18vh,200px)]">
+        <div className="mx-auto max-w-shell">
+          <div data-reveal className="mb-6 flex items-center gap-2.5 font-mono text-xs uppercase tracking-[0.12em] text-rf-ink/60">
+            <Link to={withLocale('/', locale)} className="transition-colors hover:text-rf-accent">{ui.home}</Link>
+            <span className="text-rf-ink/30">/</span>
+            <span className="text-rf-accent">{ui.work}</span>
           </div>
+          <div data-reveal className="flex flex-wrap items-end justify-between gap-6">
+            <h1 className="m-0 font-display text-[clamp(52px,9vw,128px)] font-extrabold leading-[0.9] tracking-[-0.035em]">
+              {ui.selectedWork}
+              <span className="text-rf-accent">.</span>
+            </h1>
+            <span className="max-w-[24ch] pb-2.5 font-mono text-xs uppercase leading-[1.7] tracking-[0.12em] text-rf-ink/40">
+              {settings.startYear}–{year} · {ui.projectsTagline} · {ui.location}
+            </span>
+          </div>
+        </div>
+      </section>
+
+      {/* grid */}
+      <section className="px-[clamp(20px,5vw,72px)] pb-[clamp(40px,6vh,80px)]">
+        <div data-reveal className="mx-auto grid max-w-shell gap-[clamp(18px,2.4vw,32px)] [grid-template-columns:repeat(auto-fit,minmax(320px,1fr))]">
+          {sorted.map((project, i) => {
+            const isComingSoon = project.title === 'Coming Soon';
+            const num = String(i + 1).padStart(2, '0');
+            const inner = (
+              <>
+                <div className="relative overflow-hidden border border-white/10">
+                  <img
+                    src={project.heroImage}
+                    alt={project.title}
+                    loading="lazy"
+                    className={`block aspect-[16/10] w-full object-cover transition-transform duration-700 ease-rf ${
+                      isComingSoon ? 'grayscale' : 'group-hover:scale-[1.05]'
+                    }`}
+                  />
+                  <span
+                    className="absolute left-3.5 top-3.5 font-display text-[26px] font-extrabold leading-none text-transparent"
+                    style={{ WebkitTextStroke: '1.2px rgba(255,255,255,0.55)' }}
+                  >
+                    {num}
+                  </span>
+                </div>
+                <div className="mt-[18px] flex items-baseline justify-between gap-3.5">
+                  <span className="font-mono text-[11px] uppercase tracking-[0.14em] text-rf-accent">{project.subtitle}</span>
+                </div>
+                <h2 className="mt-2 font-display text-[clamp(26px,2.8vw,34px)] font-bold leading-[1.04] tracking-[-0.025em]">
+                  {project.title}
+                </h2>
+                <p className="mt-3 text-[15px] leading-[1.6] text-rf-ink/[0.58] line-clamp-3">{project.overview}</p>
+                {!isComingSoon && (
+                  <span className="mt-4 inline-flex items-center gap-2 font-mono text-xs uppercase tracking-[0.1em] text-rf-ink transition-colors group-hover:text-rf-accent">
+                    {ui.viewProject} →
+                  </span>
+                )}
+              </>
+            );
+
+            return isComingSoon ? (
+              <div key={project.slug} className="flex select-none flex-col opacity-50">{inner}</div>
+            ) : (
+              <Link key={project.slug} to={withLocale(`/projects/${project.slug}`, locale)} className="group flex flex-col">
+                {inner}
+              </Link>
+            );
+          })}
+        </div>
+      </section>
+
+      {/* more coming */}
+      <section className="px-[clamp(20px,5vw,72px)] pb-[clamp(72px,11vh,128px)] pt-[clamp(20px,3vh,40px)]">
+        <div data-reveal className="mx-auto flex max-w-shell flex-wrap items-center justify-between gap-5 border-t border-white/[0.08] pt-7">
+          <span className="inline-flex items-center gap-3 font-mono text-xs uppercase tracking-[0.12em] text-rf-ink/[0.45]">
+            <span className="h-2 w-2 rounded-full bg-rf-accent shadow-[0_0_0_4px_rgba(228,76,101,0.18)]" />
+            {ui.moreProjects}
+          </span>
+          <Link
+            to={`${withLocale('/', locale)}#contact`}
+            className="border-b-2 border-rf-accent pb-1 font-mono text-[13px] uppercase tracking-[0.08em] text-rf-ink transition-colors hover:text-rf-accent"
+          >
+            {ui.workWithMe} →
+          </Link>
         </div>
       </section>
     </>

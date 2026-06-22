@@ -1,25 +1,37 @@
-@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@100;300;400&display=swap');
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-/* Noise / grain texture — adds tactile depth over the flat background */
-body::after {
-  content: '';
-  position: fixed;
-  inset: 0;
-  pointer-events: none;
-  z-index: 200;
-  opacity: 0.038;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)'/%3E%3C/svg%3E");
-  background-size: 200px 200px;
-}
+/* ============================================================
+   Design tokens — portfolio redesign (editorial / flow-field)
+   ============================================================ */
+:root {
+  --rf-bg:        #131419;
+  --rf-surface:   #15161d;
+  --rf-surface-2: #1a1b23;
 
-/* Hide system cursor when custom cursor is active */
-html[data-custom-cursor],
-html[data-custom-cursor] * {
-  cursor: none !important;
+  --rf-text:      #f3f2ef;
+  --rf-text-62:   rgba(243,242,239,0.62);
+  --rf-text-50:   rgba(243,242,239,0.50);
+  --rf-text-40:   rgba(243,242,239,0.40);
+  --rf-text-34:   rgba(243,242,239,0.34);
+
+  --rf-accent:        #e44c65;
+  --rf-accent-hover:  #ff5f78;
+
+  --rf-hairline: rgba(255,255,255,0.08);
+  --rf-border:   rgba(255,255,255,0.10);
+
+  --rf-maxw: 1320px;
+  --rf-gutter: clamp(20px, 5vw, 72px);
+  --rf-section-y: clamp(72px, 12vh, 140px);
+
+  --rf-ease: cubic-bezier(0.2, 0.7, 0.2, 1);
+  --rf-reveal-dur: 0.8s;
+
+  --rf-display: 'Bricolage Grotesque', system-ui, sans-serif;
+  --rf-body:    'Hanken Grotesk', system-ui, sans-serif;
+  --rf-mono:    'JetBrains Mono', ui-monospace, monospace;
 }
 
 @layer base {
@@ -28,61 +40,47 @@ html[data-custom-cursor] * {
   }
 
   body {
+    margin: 0;
     overflow-x: hidden;
+    background: var(--rf-bg);
+    color: var(--rf-text);
+    font-family: var(--rf-body);
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
   }
 
   ::selection {
-    background-color: rgba(228, 76, 101, 0.4);
-    color: white;
+    background: rgba(228, 76, 101, 0.35);
+    color: #fff;
   }
 
-  ::-webkit-scrollbar {
-    width: 8px;
-  }
-
-  ::-webkit-scrollbar-track {
-    background: #1c1d26;
-  }
-
-  ::-webkit-scrollbar-thumb {
-    background: #3a3b4a;
-    border-radius: 4px;
-  }
-
-  ::-webkit-scrollbar-thumb:hover {
-    background: #e44c65;
-  }
+  ::-webkit-scrollbar { width: 9px; }
+  ::-webkit-scrollbar-track { background: var(--rf-bg); }
+  ::-webkit-scrollbar-thumb { background: #33343f; border-radius: 0; }
+  ::-webkit-scrollbar-thumb:hover { background: var(--rf-accent); }
 }
 
-@keyframes underline-draw {
-  to { width: 100%; }
+/* One continuous flow-field canvas sits behind everything; all app
+   content is lifted above it. */
+.rf-bg-canvas { position: fixed; inset: 0; width: 100%; height: 100%; z-index: 0; pointer-events: none; }
+#root { position: relative; z-index: 1; }
+
+/* Animated underline for nav links */
+.rf-navlink { position: relative; }
+.rf-navlink::after {
+  content: '';
+  position: absolute;
+  left: 0; right: 0; bottom: -4px;
+  height: 1px;
+  background: var(--rf-accent);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.35s var(--rf-ease);
 }
+.rf-navlink:hover::after,
+.rf-navlink[data-active='true']::after { transform: scaleX(1); }
 
-@keyframes gradient-pan {
-  0%   { background-position: 0%   50%; }
-  50%  { background-position: 100% 50%; }
-  100% { background-position: 0%   50%; }
-}
-
-@layer components {
-  .text-gradient {
-    background: linear-gradient(270deg, #e44c65, #f472b6, #c73d56, #f43f5e);
-    background-size: 300% 300%;
-    -webkit-background-clip: text;
-    background-clip: text;
-    -webkit-text-fill-color: transparent;
-    color: transparent;
-    animation: gradient-pan 6s ease infinite;
-  }
-
-  .glass {
-    @apply bg-surface/80 backdrop-blur-lg border border-white/5;
-  }
-
-  .card-hover {
-    @apply transition-all duration-300 hover:translate-y-[-4px] hover:shadow-xl hover:shadow-accent/10;
-  }
-}
+@keyframes rf-marquee { from { transform: translateX(0); } to { transform: translateX(-50%); } }
 
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {

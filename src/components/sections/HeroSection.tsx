@@ -1,8 +1,4 @@
-import { ArrowDown, Download } from 'lucide-react';
 import { useSmoothScroll } from '../../hooks/useSmoothScroll';
-import { FadeIn } from '../ui/FadeIn';
-import { AnimatedRoles } from '../ui/AnimatedRoles';
-import { MagneticButton } from '../ui/MagneticButton';
 import { useLocale } from '../../hooks/useLocale';
 import { useSiteSettings } from '../../hooks/useSanityContent';
 
@@ -10,89 +6,105 @@ export function HeroSection() {
   const { scrollTo } = useSmoothScroll();
   const { locale } = useLocale();
   const { settings } = useSiteSettings(locale);
-  const { identity, ui } = settings;
+  const { identity, roles, about, startYear, ui } = settings;
+
+  const [firstName, ...rest] = identity.name.split(' ');
+  const lastName = rest.join(' ');
+
+  // Derive the hero meta values from existing CMS content; labels are CMS-editable.
+  const institutionParts = about.institution.split('·').map((s) => s.trim());
+  const meta = [
+    { label: ui.metaRole, value: institutionParts[0] ?? '' },
+    { label: ui.metaStudying, value: institutionParts[1] ?? '' },
+    { label: ui.metaFocus, value: roles.slice(0, 3).join(' · ') },
+  ].filter((m) => m.value);
+
+  const labelMono = 'font-mono text-[11px] uppercase tracking-[0.16em] text-rf-ink/[0.34]';
 
   return (
-    <section className="relative flex min-h-screen items-center justify-center overflow-hidden">
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_rgba(228,76,101,0.08)_0%,_transparent_60%)]" />
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_left,_rgba(228,76,101,0.05)_0%,_transparent_60%)]" />
-      <div
-        className="absolute inset-0 opacity-[0.03]"
-        style={{
-          backgroundImage: `linear-gradient(rgba(255,255,255,0.1) 1px, transparent 1px),
-                           linear-gradient(90deg, rgba(255,255,255,0.1) 1px, transparent 1px)`,
-          backgroundSize: '60px 60px',
-        }}
-      />
-
-      <div className="relative z-10 mx-auto max-w-4xl px-6 pt-20 text-center sm:pt-0">
-        <FadeIn direction="down" delay={0} threshold={0}>
-          <div className="mb-6 flex justify-center sm:mb-8">
-            <div className="relative">
-              <div className="absolute -inset-2 rounded-3xl bg-gradient-to-r from-accent to-pink-400 opacity-40 blur-xl" />
-              <img
-                src={identity.avatar}
-                alt={identity.name}
-                className="relative h-44 w-auto max-w-[140px] rounded-3xl border-2 border-white/10 object-contain shadow-2xl sm:h-72 sm:max-w-[200px]"
-              />
-            </div>
-          </div>
-        </FadeIn>
-
-        <FadeIn direction="up" delay={150} threshold={0}>
-          <div className="relative mb-5 inline-block sm:mb-8">
-            <h1 className="font-display text-4xl font-bold leading-tight tracking-tight sm:text-5xl md:text-7xl">
-              {identity.name.split(' ')[0]}{' '}
-              <span className="text-gradient">{identity.name.split(' ').slice(1).join(' ')}</span>
-            </h1>
-            <span
-              className="absolute bottom-[-6px] left-0 h-[2px] w-0 rounded-full bg-gradient-to-r from-accent via-pink-400 to-transparent"
-              style={{ animation: 'underline-draw 0.8s ease-out 0.6s forwards' }}
-            />
-          </div>
-        </FadeIn>
-
-        <div className="mb-8">
-          <AnimatedRoles />
+    <section id="top" className="relative px-[clamp(20px,5vw,72px)] pb-[clamp(40px,7vh,80px)] pt-[clamp(96px,11vh,148px)]">
+      <div className="relative z-[1] mx-auto max-w-shell">
+        {/* status bar */}
+        <div
+          data-reveal
+          className="mb-[clamp(36px,6vh,64px)] flex flex-wrap items-center justify-between gap-5 border-b border-white/[0.08] pb-[22px]"
+        >
+          <span className="inline-flex items-center gap-2.5 font-mono text-xs uppercase tracking-[0.14em] text-rf-ink/[0.62]">
+            <span className="h-2 w-2 rounded-full bg-rf-accent shadow-[0_0_0_4px_rgba(228,76,101,0.18)]" />
+            {ui.available}
+          </span>
+          <span className="font-mono text-xs uppercase tracking-[0.14em] text-rf-ink/[0.34]">
+            {ui.heroLocation} · {new Date().getFullYear()}
+          </span>
         </div>
 
-        <FadeIn direction="up" delay={450} threshold={0}>
-          <p className="mx-auto mb-7 max-w-xl text-base font-light leading-relaxed text-white/40 sm:mb-10">
-            {identity.tagline}
-          </p>
-        </FadeIn>
+        <div className="flex flex-wrap items-start gap-[clamp(32px,5vw,72px)]">
+          <div className="min-w-0 flex-[1_1_480px]">
+            <div data-reveal>
+              <span className="font-mono text-[13px] uppercase tracking-[0.14em] text-rf-accent">
+                {roles.join(' · ')}
+              </span>
+              <h1
+                data-hero-title
+                className="mt-[18px] font-display text-[clamp(56px,9.5vw,140px)] font-extrabold leading-[0.9] tracking-[-0.035em] text-rf-ink"
+              >
+                {firstName}
+                <br />
+                {lastName}
+                <span className="text-rf-accent">.</span>
+              </h1>
+            </div>
 
-        <FadeIn direction="up" delay={550} threshold={0}>
-          <div className="flex flex-col items-center gap-4 sm:flex-row sm:justify-center">
-            <MagneticButton>
+            <p data-reveal className="mt-7 max-w-[46ch] text-[clamp(16px,1.4vw,19px)] leading-[1.65] text-rf-ink/[0.62]">
+              {identity.tagline}
+            </p>
+
+            {meta.length > 0 && (
+              <div data-reveal className="mt-8 flex max-w-[560px] flex-col gap-2.5 border-y border-white/[0.08] py-5">
+                {meta.map((m) => (
+                  <div key={m.label} className="flex items-baseline gap-4">
+                    <span className={`${labelMono} min-w-[78px]`}>{m.label}</span>
+                    <span className="text-[15px] text-rf-ink/[0.82]">{m.value}</span>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            <div data-reveal className="mt-[30px] flex flex-wrap gap-3.5">
               <button
                 onClick={() => scrollTo('projects')}
-                className="inline-flex items-center gap-2 rounded-lg bg-accent px-8 py-3 font-light text-white shadow-lg shadow-accent/20 transition-all duration-300 hover:bg-accent-dark hover:shadow-accent/40"
+                className="inline-flex items-center gap-2.5 bg-rf-accent px-[26px] py-[15px] font-mono text-[13px] uppercase tracking-[0.08em] text-white transition-colors hover:bg-rf-accentHover"
               >
-                {ui.viewProjects}
+                {ui.viewProjects} →
               </button>
-            </MagneticButton>
-            <MagneticButton>
               <a
                 href={identity.cvPath}
                 download
-                className="inline-flex items-center gap-2 rounded-lg border border-white/10 px-8 py-3 font-light text-white/70 transition-all duration-300 hover:border-accent/50 hover:text-white"
+                className="inline-flex items-center gap-2.5 border border-white/[0.16] px-[26px] py-[15px] font-mono text-[13px] uppercase tracking-[0.08em] text-rf-ink/[0.85] transition-colors hover:border-rf-accent hover:text-white"
               >
-                <Download size={16} />
-                {ui.downloadCv}
+                {ui.downloadCv} ↓
               </a>
-            </MagneticButton>
+            </div>
           </div>
-        </FadeIn>
-      </div>
 
-      <button
-        onClick={() => scrollTo('projects')}
-        className="absolute bottom-8 left-1/2 -translate-x-1/2 animate-bounce text-white/30 transition-colors hover:text-accent"
-        aria-label="Scroll down"
-      >
-        <ArrowDown size={24} />
-      </button>
+          {/* framed photo */}
+          <div data-reveal className="min-w-[240px] max-w-[380px] flex-[1_1_300px]">
+            <div className="relative border border-white/10 bg-rf-surface2">
+              <div className="absolute inset-x-0 top-0 h-[3px] bg-rf-accent" />
+              <img
+                src={identity.avatar}
+                alt={identity.name}
+                className="block h-[clamp(380px,46vh,470px)] w-full object-cover object-[center_top]"
+                style={{ filter: 'contrast(1.03) saturate(1.02)' }}
+              />
+              <div className="flex items-center justify-between border-t border-white/10 px-4 py-3.5">
+                <span className="font-mono text-[11px] uppercase tracking-[0.14em] text-rf-ink/50">{identity.name}</span>
+                <span className="font-mono text-[11px] uppercase tracking-[0.14em] text-rf-accent">EST. {startYear}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
     </section>
   );
 }
