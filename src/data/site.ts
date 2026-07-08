@@ -50,11 +50,11 @@ export const roles: string[] = [
 export const about = {
   /** Short paragraphs shown in the about column */
   paragraphs: [
-    "I'm a Communication & Multimedia Design student at Avans University in Breda, currently interning at Live Wall where I'm deepening my frontend development skills.",
+    "I'm a Communication & Multimedia Design student at Avans University in Breda. I recently completed a frontend internship at Live Wall, where I deepened my frontend development skills.",
     'I specialise in game system design, immersive XR experiences, and technical art — and I bring that same care for interaction and craft to web interfaces.',
   ],
   /** Faint line shown below the paragraphs */
-  institution: 'Frontend Intern @ Live Wall · CMD Student, Avans University of Applied Sciences',
+  institution: 'Frontend Internship @ Live Wall (2026) · CMD Student, Avans University of Applied Sciences',
   /** 4-cell micro-skill grid — add/remove entries freely */
   coreSkills: [
     { icon: 'Code',      label: 'Development', detail: 'Unity, C#, React, TypeScript'  },
@@ -86,7 +86,7 @@ export const startYear = 2023;
 // ── SEO defaults ──────────────────────────────────────────────────────────────
 export const seo = {
   siteTitle:   `${identity.name} — Portfolio`,
-  description: `Portfolio of ${identity.name} — Frontend Developer, Game Developer, 3D Artist & Creative Coder. Currently interning at Live Wall.`,
+  description: `Portfolio of ${identity.name} — Frontend Developer, Game Developer, 3D Artist & Creative Coder.`,
   siteUrl:     'https://rocheefaverey.com',
 };
 
@@ -235,10 +235,10 @@ export const fallbackSiteSettings: Record<'en' | 'nl', SiteSettings> = {
     about: {
       ...about,
       paragraphs: [
-        'Ik ben afgestudeerd in Communication & Multimedia Design aan Avans Hogeschool in Breda en loop momenteel stage bij Live Wall, waar ik mijn frontend development skills verder verdiep.',
+        'Ik studeer Communication & Multimedia Design aan Avans Hogeschool in Breda en heb onlangs mijn frontend-stage bij Live Wall afgerond, waar ik mijn frontend development skills verder heb verdiept.',
         'Ik specialiseer me in game system design, immersive XR experiences en technical art — en neem diezelfde aandacht voor interactie en vakmanschap mee naar webinterfaces.',
       ],
-      institution: 'Frontend stagiair @ Live Wall · CMD afgestudeerd, Avans Hogeschool',
+      institution: 'Frontend stage @ Live Wall (2026) · CMD student, Avans Hogeschool',
     },
     ui: dutchUi,
   },
