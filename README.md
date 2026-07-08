@@ -32,8 +32,8 @@ npm run preview
 
 Site content (about text, projects, skills) lives in `src/data/site.ts`.
 
-## Credits
+## License
 
-This project is based on the [Landed](https://html5up.net/landed) template by [HTML5 UP](https://html5up.net), heavily modified by Rochee Faverey.
-The original template is released under the [Creative Commons Attribution 3.0 License](https://html5up.net/license) — see `LICENSE.txt`.
-Original template author: [@ajlkn](https://twitter.com/ajlkn)
+© Rochee Faverey. All rights reserved.
+
+The project started from the HTML5UP "Landed" template but has since been fully rewritten as a React + TypeScript application; no template code remains.
