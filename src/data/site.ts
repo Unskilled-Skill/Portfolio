@@ -50,11 +50,11 @@ export const roles: string[] = [
 export const about = {
   /** Short paragraphs shown in the about column */
   paragraphs: [
-    "I'm a Communication & Multimedia Design graduate from Avans University in Breda, currently interning at Live Wall where I'm deepening my frontend development skills.",
+    "I'm a Communication & Multimedia Design student at Avans University in Breda, currently interning at Live Wall where I'm deepening my frontend development skills.",
     'I specialise in game system design, immersive XR experiences, and technical art — and I bring that same care for interaction and craft to web interfaces.',
   ],
   /** Faint line shown below the paragraphs */
-  institution: 'Frontend Intern @ Live Wall · CMD Graduate, Avans University of Applied Sciences',
+  institution: 'Frontend Intern @ Live Wall · CMD Student, Avans University of Applied Sciences',
   /** 4-cell micro-skill grid — add/remove entries freely */
   coreSkills: [
     { icon: 'Code',      label: 'Development', detail: 'Unity, C#, React, TypeScript'  },
