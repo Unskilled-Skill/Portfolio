@@ -33,6 +33,11 @@ jobs:
       - name: Build
         run: npm run build
 
+      # GitHub Pages has no SPA fallback: deep links like /projects/ar-you-ready
+      # would 404. Serving the app as 404.html lets React Router handle them.
+      - name: SPA fallback for deep links
+        run: cp dist/index.html dist/404.html
+
       - name: Setup Pages
         uses: actions/configure-pages@v5
 
